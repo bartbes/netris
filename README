@@ -1,0 +1,11 @@
+Modified version of Tetris implemented using LÖVE.
+Networking is an important part of the gameplay, as it is completely
+multiplayer, VS mode, Co-Op and Controller mode.
+VS and Co-Op mode are what you'd expect from it.
+Controller mode is where you select the block the other player has to use.
+
+Networking is done using LUBE, a library created by me.
+
+See <http://love2d.org> for more information about the LÖVE game engine.
+Libraries used are on the forums of that engine.
+
