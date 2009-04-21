@@ -21,26 +21,91 @@ function load()
 	blocks[10] = block:new(255, 255, 255, 10, 12)
 	blocks[11] = block:new(255, 255, 255, 11, 12)
 	blocks[12] = block:new(255, 255, 255, 12, 12)
-	pieces.O:create(blocks, 1, 1)
+	pieces.T:create(blocks, 1, 1, true)
+	activeblocks = true
 	timer = 0
 	time = 0
 	score = 0
 	speed = 1
 	timer2 = 0
+	math.randomseed(os.time())
+end
+
+function collision(block, x, y, exclude_active)
+	local dx, dy = block.x + x, block.y + y
+	for i, v in ipairs(blocks) do
+		if v.x == dx and v.y == dy then
+			if not exclude_active or not v.active then
+				return true
+			end
+		end
+	end
+	return false
 end
 
 function checkblock(block)
-	if block.y == 12 then block.resting = true end
+	if block.y == 12 then
+		block.resting = true
+		if block.active then
+			for i, v in ipairs(blocks) do
+				if v.active then
+					v.resting = true
+					v.active = false
+				end
+			end
+			activeblocks = false
+		end
+	end
 	for i, v in ipairs(blocks) do
 		if v.x == block.x and v.y == block.y + 1 and v.resting then
 			block.resting = true
-			return
+			if block.active then
+				for j, w in ipairs(blocks) do
+					if w.active then
+						w.resting = true
+						w.active = false
+					end
+				end
+				activeblocks = false
+				return true
+			end
+			return false
 		end
 	end
 end
 
 function update(dt)
 	love.timer.sleep(100)
+	local drop = love.keyboard.isDown(love.key_down)
+	if drop then
+		speed = 10
+	else
+		speed = 1
+	end
+	timer2 = timer2 + dt
+	if timer2 >= 1/speed then
+		local controlstopped = false
+		for i, v in ipairs(blocks) do
+			checkblock(v)
+		end
+		for i, v in ipairs(blocks) do
+			checkblock(v)
+		end
+		for i, v in ipairs(blocks) do
+			checkblock(v)
+		end
+		for i, v in ipairs(blocks) do
+			if v.active and not v.resting then
+				v.y = v.y + 1
+			end
+		end
+		if not activeblocks then
+			local index = pieceindexes[math.random(1, #pieceindexes)]
+			pieces[index]:create(blocks, math.random(1, 8), 1, true)
+			activeblocks = true
+		end
+		timer2 = 0
+	end
 	for i = 1, 12 do
 		local lineblocks = {}
 		for j, v in ipairs(blocks) do
@@ -53,29 +118,10 @@ function update(dt)
 			score = score + 100
 		end
 	end
-	local drop = love.keyboard.isDown(love.key_down)
-	if drop then
-		speed = 10
-	else
-		speed = 1
-	end
-	timer2 = timer2 + dt
-	if timer2 >= 1/speed then
-		for i, v in ipairs(blocks) do
-			checkblock(v)
+	for i, v in ipairs(blocks) do
+		if v.y == 1 and not v.active then
+			love.system.exit()
 		end
-		for i, v in ipairs(blocks) do
-			checkblock(v)
-		end
-		for i, v in ipairs(blocks) do
-			checkblock(v)
-		end
-		for i, v in ipairs(blocks) do
-			if not v.resting then
-				v.y = v.y + 1
-			end
-		end
-		timer2 = 0
 	end
 	timer = timer + dt
 	if timer > 1 then
@@ -130,6 +176,36 @@ end
 function keypressed(key)
 	if key == love.key_q then
 		love.system.exit()
+	elseif key == love.key_left then
+		local possible = true
+		for i, v in ipairs(blocks) do
+			if v.active and (v.x == 1 or collision(v, -1, 0, true)) then
+				possible = false
+				break
+			end
+		end
+		if possible then
+			for i, v in ipairs(blocks) do
+				if v.active then
+					v.x = v.x - 1
+				end
+			end
+		end
+	elseif key == love.key_right then
+		local possible = true
+		for i, v in ipairs(blocks) do
+			if v.active and (v.x == 12 or collision(v, 1, 0, true)) then
+				possible = false
+				break
+			end
+		end
+		if possible then
+			for i, v in ipairs(blocks) do
+				if v.active then
+					v.x = v.x + 1
+				end
+			end
+		end
 	end
 end
 

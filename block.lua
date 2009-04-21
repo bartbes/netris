@@ -6,13 +6,15 @@ block.blue = 255
 block.x = 0
 block.y = 0
 block.resting = false
+block.active = false
 
-function block:init(r, g, b, x, y)
+function block:init(r, g, b, x, y, active)
 	self.red = r or self.red
 	self.green = g or self.green
 	self.blue = b or self.blue
 	self.x = x or self.x
 	self.y = y or self.y
+	self.active = active or self.active
 end
 
 function block:draw()
