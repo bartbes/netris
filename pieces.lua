@@ -19,6 +19,31 @@ function piece:create(blocks, gx, gy, status)
 	end
 end
 
+function piece:rotate(blocks, active, rotation)
+	local x = blocks[active[2]].x
+	local y = blocks[active[2]].y
+	local positions = {}
+	positions[active[2]] = { x = x, y = y }
+	if rotation == 90 then
+		positions[active[1]] = { x = x + self.blockpositions[2]-self.blockpositions[4], y = y + self.blockpositions[1]-self.blockpositions[3] }
+		positions[active[3]] = { x = x + self.blockpositions[6]-self.blockpositions[4], y = y + self.blockpositions[5]-self.blockpositions[3] }
+		positions[active[4]] = { x = x + self.blockpositions[8]-self.blockpositions[4], y = y + self.blockpositions[7]-self.blockpositions[3] }
+	elseif rotation == 180 then
+		positions[active[1]] = { x = x + self.blockpositions[3]-self.blockpositions[1], y = y + self.blockpositions[4]-self.blockpositions[2] }
+		positions[active[3]] = { x = x + self.blockpositions[3]-self.blockpositions[5], y = y + self.blockpositions[4]-self.blockpositions[6] }
+		positions[active[4]] = { x = x + self.blockpositions[3]-self.blockpositions[7], y = y + self.blockpositions[4]-self.blockpositions[8 ] }
+	elseif rotation == 270 then
+		positions[active[1]] = { x = x + self.blockpositions[4]-self.blockpositions[2], y = y + self.blockpositions[3]-self.blockpositions[1] }
+		positions[active[3]] = { x = x + self.blockpositions[4]-self.blockpositions[6], y = y + self.blockpositions[3]-self.blockpositions[5] }
+		positions[active[4]] = { x = x + self.blockpositions[4]-self.blockpositions[8], y = y + self.blockpositions[3]-self.blockpositions[7] }
+	else
+		positions[active[1]] = { x = x + self.blockpositions[1]-self.blockpositions[3], y = y + self.blockpositions[2]-self.blockpositions[4] }
+		positions[active[3]] = { x = x + self.blockpositions[5]-self.blockpositions[3], y = y + self.blockpositions[6]-self.blockpositions[4] }
+		positions[active[4]] = { x = x + self.blockpositions[7]-self.blockpositions[3], y = y + self.blockpositions[8]-self.blockpositions[4] }
+	end
+	return positions
+end
+
 pieces = {}
 pieces.I = piece:new({1, 1, 2, 1, 3, 1, 4, 1}, 4, "red")
 pieces.J = piece:new({1, 1, 2, 1, 3, 1, 3, 2}, 4, "yellow")

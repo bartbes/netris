@@ -88,6 +88,7 @@ function update(dt)
 		end
 		if not activeblocks then
 			activepiece = pieceindexes[math.random(1, #pieceindexes)]
+			activerotation = 0
 			pieces[activepiece]:create(blocks, math.random(1, 8), 1, true)
 			activeblocks = true
 		end
@@ -193,6 +194,37 @@ function keypressed(key)
 					v.x = v.x + 1
 				end
 			end
+		end
+	elseif key == love.key_up then
+		local activeblocks = {}
+		for i, v in ipairs(blocks) do
+			if v.active then
+				table.insert(activeblocks, i)
+			end
+		end
+		local newrotation = activerotation + 90
+		if newrotation >= 360 then newrotation = newrotation - 360 end
+		local newpositions = pieces[activepiece]:rotate(blocks, activeblocks, newrotation)
+		local possible = true
+		for i, v in pairs(newpositions) do
+			if not possible then break end
+			if v.x < 1 or v.x > 12 or v.y < 1 or v.y > 12 then
+				possible = false
+				break
+			end
+			for j, w in ipairs(blocks) do
+				if w.x == v.x and w.y == v.y and not w.active then
+					possible = false
+					break
+				end
+			end
+		end
+		if possible then
+			for i, v in ipairs(activeblocks) do
+				blocks[v].x = newpositions[v].x
+				blocks[v].y = newpositions[v].y
+			end
+			activerotation = newrotation
 		end
 	end
 end
