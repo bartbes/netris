@@ -9,25 +9,12 @@ love.filesystem.require("pieces.lua")
 function load()
 	love.graphics.setFont(love.default_font, 12)
 	blocks = {}
-	blocks[1] = block:new(255, 255, 255, 1, 12)
-	blocks[2] = block:new(255, 255, 255, 2, 12)
-	blocks[3] = block:new(255, 255, 255, 3, 12)
-	blocks[4] = block:new(255, 255, 255, 4, 12)
-	blocks[5] = block:new(255, 255, 255, 5, 12)
-	blocks[6] = block:new(255, 255, 255, 6, 12)
-	blocks[7] = block:new(255, 255, 255, 7, 12)
-	blocks[8] = block:new(255, 255, 255, 8, 12)
-	blocks[9] = block:new(255, 255, 255, 9, 12)
-	blocks[10] = block:new(255, 255, 255, 10, 12)
-	blocks[11] = block:new(255, 255, 255, 11, 12)
-	blocks[12] = block:new(255, 255, 255, 12, 12)
-	pieces.T:create(blocks, 1, 1, true)
-	activeblocks = true
+	activeblocks = false
 	timer = 0
 	time = 0
 	score = 0
 	speed = 1
-	timer2 = 0
+	timer2 = 10
 	math.randomseed(os.time())
 end
 
@@ -100,8 +87,8 @@ function update(dt)
 			end
 		end
 		if not activeblocks then
-			local index = pieceindexes[math.random(1, #pieceindexes)]
-			pieces[index]:create(blocks, math.random(1, 8), 1, true)
+			activepiece = pieceindexes[math.random(1, #pieceindexes)]
+			pieces[activepiece]:create(blocks, math.random(1, 8), 1, true)
 			activeblocks = true
 		end
 		timer2 = 0
@@ -120,6 +107,7 @@ function update(dt)
 	end
 	for i, v in ipairs(blocks) do
 		if v.y == 1 and not v.active then
+			print("You lost!")
 			love.system.exit()
 		end
 	end
