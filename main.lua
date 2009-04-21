@@ -3,33 +3,44 @@ love.filesystem.require("libs/SECS.lua")
 love.filesystem.require("libs/serverbrowser.lua")
 love.filesystem.require("libs/gettime.lua")
 love.filesystem.require("block.lua")
+love.filesystem.require("colors.lua")
+love.filesystem.require("pieces.lua")
 
 function load()
 	love.graphics.setFont(love.default_font, 12)
 	blocks = {}
-	blocks[1] = block:new(255, 255, 0, 3, 1)
-	blocks[2] = block:new(255, 0, 0, 3, 3)
-	blocks[3] = block:new(255, 0, 0, 3, 4)
-	blocks[4] = block:new(255, 0, 0, 2, 3)
-	blocks[5] = block:new(255, 255, 0, 3, 2)
-	blocks[6] = block:new(255, 255, 255, 1, 12)
-	blocks[7] = block:new(255, 255, 255, 2, 12)
-	blocks[8] = block:new(255, 255, 255, 3, 12)
-	blocks[9] = block:new(255, 255, 255, 4, 12)
-	blocks[10] = block:new(255, 255, 255, 5, 12)
-	blocks[11] = block:new(255, 255, 255, 6, 12)
-	blocks[12] = block:new(255, 255, 255, 7, 12)
-	blocks[13] = block:new(255, 255, 255, 8, 12)
-	blocks[14] = block:new(255, 255, 255, 9, 12)
-	blocks[15] = block:new(255, 255, 255, 10, 12)
-	blocks[16] = block:new(255, 255, 255, 11, 12)
-	blocks[17] = block:new(255, 255, 255, 12, 12)
+	blocks[1] = block:new(255, 255, 255, 1, 12)
+	blocks[2] = block:new(255, 255, 255, 2, 12)
+	blocks[3] = block:new(255, 255, 255, 3, 12)
+	blocks[4] = block:new(255, 255, 255, 4, 12)
+	blocks[5] = block:new(255, 255, 255, 5, 12)
+	blocks[6] = block:new(255, 255, 255, 6, 12)
+	blocks[7] = block:new(255, 255, 255, 7, 12)
+	blocks[8] = block:new(255, 255, 255, 8, 12)
+	blocks[9] = block:new(255, 255, 255, 9, 12)
+	blocks[10] = block:new(255, 255, 255, 10, 12)
+	blocks[11] = block:new(255, 255, 255, 11, 12)
+	blocks[12] = block:new(255, 255, 255, 12, 12)
+	pieces.O:create(blocks, 1, 1)
 	timer = 0
 	time = 0
+	score = 0
+	speed = 1
+	timer2 = 0
+end
+
+function checkblock(block)
+	if block.y == 12 then block.resting = true end
+	for i, v in ipairs(blocks) do
+		if v.x == block.x and v.y == block.y + 1 and v.resting then
+			block.resting = true
+			return
+		end
+	end
 end
 
 function update(dt)
-	love.timer.sleep(250)
+	love.timer.sleep(100)
 	for i = 1, 12 do
 		local lineblocks = {}
 		for j, v in ipairs(blocks) do
@@ -37,9 +48,34 @@ function update(dt)
 		end
 		if #lineblocks == 12 then
 			for j, v in ipairs(lineblocks) do
-				table.remove(lineblocks, v+1-j)
+				table.remove(blocks, v+1-j)
+			end
+			score = score + 100
+		end
+	end
+	local drop = love.keyboard.isDown(love.key_down)
+	if drop then
+		speed = 10
+	else
+		speed = 1
+	end
+	timer2 = timer2 + dt
+	if timer2 >= 1/speed then
+		for i, v in ipairs(blocks) do
+			checkblock(v)
+		end
+		for i, v in ipairs(blocks) do
+			checkblock(v)
+		end
+		for i, v in ipairs(blocks) do
+			checkblock(v)
+		end
+		for i, v in ipairs(blocks) do
+			if not v.resting then
+				v.y = v.y + 1
 			end
 		end
+		timer2 = 0
 	end
 	timer = timer + dt
 	if timer > 1 then
@@ -88,6 +124,7 @@ function draw()
 	love.graphics.setColor(255, 255, 255)
 	drawgrid()
 	love.graphics.draw("Time: @" .. time, 640, 50)
+	love.graphics.draw("Score: " .. score, 640, 70)
 end
 
 function keypressed(key)
