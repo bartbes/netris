@@ -5,6 +5,7 @@ love.filesystem.require("libs/gettime.lua")
 love.filesystem.require("block.lua")
 love.filesystem.require("colors.lua")
 love.filesystem.require("pieces.lua")
+love.filesystem.require("protocol.lua")
 
 function load()
 	love.graphics.setFont(love.default_font, 12)
@@ -15,6 +16,8 @@ function load()
 	score = 0
 	speed = 1
 	timer2 = 10
+	player = 0
+	activeplayer = 0
 	math.randomseed(os.time())
 end
 
@@ -86,7 +89,7 @@ function update(dt)
 				v.y = v.y + 1
 			end
 		end
-		if not activeblocks then
+		if not activeblocks and activeplayer == player then
 			activepiece = pieceindexes[math.random(1, #pieceindexes)]
 			activerotation = 0
 			pieces[activepiece]:create(blocks, math.random(1, 8), 1, true)
@@ -117,6 +120,7 @@ function update(dt)
 		time = gettime()
 		timer = 0
 	end
+	updateconn()
 end
 
 function drawgrid()
