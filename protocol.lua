@@ -1,4 +1,6 @@
 connected = false
+defport = 8188
+is_server = false
 
 function rcvCallback(data)
 	local it = data:gmatch("([^ \n]*)")
@@ -6,7 +8,7 @@ function rcvCallback(data)
 	if command == "activePlayer" then
 		activeplayer = tonumber(it())
 	elseif command == "setPlayer" then
-		player = tonumber(it())
+		localplayer = tonumber(it())
 	elseif command == "addblock" then
 		local x = tonumber(it())
 		local y = tonumber(it())
@@ -23,14 +25,15 @@ function rcvCallback(data)
 		local num = tonumber(it())
 		local name = it()
 		local score = tonumber(it())
-		players[num] = {}
-		players[num].name = name
-		players[num].score = score
+		players[num] = player:new(name, score)
 	elseif command == "removePlayer" then
 		local num = tonumber(it())
 		local msg = it()
 		msg(players[num].name .. " left: " .. msg)
 		players[num] = nil
+	elseif command == "gameScore" then
+		local sc = tonumber(it())
+		score = sc
 	end
 end
 
@@ -38,12 +41,14 @@ function connect(ip, port)
 	if connected then
 		disconnect()
 	end
+	port = port or defport
 	conn = lube.client()
 	conn:setHandshake("Netris rules!")
-	conn:setPing(5)
+	conn:setPing(true, 5, "NetrisPing")
 	conn:setCallback(rcvCallback)
 	conn:connect(ip, port)
 	connected = true
+	is_server = false
 end
 
 function reportback(block)
@@ -71,5 +76,19 @@ function disconnect()
 	if connected then
 		conn:disconnect()
 		conn = nil
+		is_server = false
 	end
+end
+
+function startserver(port)
+	port = port or 8188
+	if connected then
+		disconnect()
+	end
+	conn = lube.server(port)
+	conn:setHandshake("Netris rules!")
+	conn:setPing(true, 3, "NetrisPing")
+	conn:setCallback(rcvCallback)
+	connected = true
+	is_server = true
 end

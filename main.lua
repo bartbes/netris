@@ -5,6 +5,7 @@ love.filesystem.require("libs/gettime.lua")
 love.filesystem.require("block.lua")
 love.filesystem.require("colors.lua")
 love.filesystem.require("pieces.lua")
+love.filesystem.require("player.lua")
 love.filesystem.require("protocol.lua")
 
 function load()
@@ -16,8 +17,10 @@ function load()
 	score = 0
 	speed = 1
 	timer2 = 10
-	player = 0
+	localplayer = 0
 	activeplayer = 0
+	players = {}
+	players[0] = player:new("UnnamedPlayer", 0)
 	math.randomseed(os.time())
 end
 
@@ -90,7 +93,7 @@ function update(dt)
 				v.y = v.y + 1
 			end
 		end
-		if not activeblocks and activeplayer == player then
+		if not activeblocks and activeplayer == localplayer then
 			activepiece = pieceindexes[math.random(1, #pieceindexes)]
 			activerotation = 0
 			pieces[activepiece]:create(blocks, math.random(1, 8), 1, true)
@@ -159,12 +162,24 @@ function drawblocks()
 	end
 end
 
+function drawhud()
+	love.graphics.draw("Time: @" .. time, 640, 50)
+	love.graphics.draw("Score: " .. score, 640, 70)
+	love.graphics.draw("Players:", 640, 100)
+	local c = 0
+	for i, v in pairs(players) do
+		love.graphics.draw("    " .. v.name .. "    " .. v.score, 640, 120+20*c)
+		if i == activeplayer then
+			love.graphics.draw("*", 644, 120+20*c)
+		end
+	end
+end
+
 function draw()
 	drawblocks()
 	love.graphics.setColor(255, 255, 255)
 	drawgrid()
-	love.graphics.draw("Time: @" .. time, 640, 50)
-	love.graphics.draw("Score: " .. score, 640, 70)
+	drawhud()
 end
 
 function keypressed(key)
@@ -236,3 +251,8 @@ end
 
 function keyreleased(key)
 end
+
+function msg(...)
+	print(...)
+end
+
