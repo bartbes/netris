@@ -15,6 +15,22 @@ function rcvCallback(data)
 		local b = tonumber(it())
 		table.insert(blocks, block:new(r, g, b, x, y, false))
 		blocks[#blocks].resting = true
+	elseif command == "playerScore" then
+		local player = tonumber(it())
+		local score = tonumber(it())
+		players[player].score = score
+	elseif command == "addPlayer" then
+		local num = tonumber(it())
+		local name = it()
+		local score = tonumber(it())
+		players[num] = {}
+		players[num].name = name
+		players[num].score = score
+	elseif command == "removePlayer" then
+		local num = tonumber(it())
+		local msg = it()
+		msg(players[num].name .. " left: " .. msg)
+		players[num] = nil
 	end
 end
 
@@ -30,7 +46,13 @@ function connect(ip, port)
 	connected = true
 end
 
-function reportback(blocks)
+function reportback(block)
+	if connected then
+		conn:send(string.format("addblock %i %i %i %i %i\n", block.x, block.y, block.red, block.green, block.blue))
+	end
+end
+
+function reportback_multiple(blocks)
 	if connected then
 		for i, v in pairs(blocks) do
 			conn:send(string.format("addblock %i %i %i %i %i\n", v.x, v.y, v.red, v.green, v.blue))
