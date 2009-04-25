@@ -54,6 +54,7 @@ function checkblock(block)
 					if w.active then
 						w.resting = true
 						w.active = false
+						reportback(w)
 					end
 				end
 				activeblocks = false
