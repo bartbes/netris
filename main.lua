@@ -2,6 +2,8 @@ love.filesystem.require("libs/LUBE.lua")
 love.filesystem.require("libs/SECS.lua")
 love.filesystem.require("libs/serverbrowser.lua")
 love.filesystem.require("libs/gettime.lua")
+love.filesystem.require("libs/LoveUI/LoveUI.lua")
+LoveUI.requireall("libs/LoveUI")
 love.filesystem.require("block.lua")
 love.filesystem.require("colors.lua")
 love.filesystem.require("pieces.lua")
@@ -14,7 +16,8 @@ love.filesystem.require("game.lua")
 love.filesystem.require("singleplayer.lua")
 love.filesystem.require("multiplayer.lua")
 love.filesystem.require("server.lua")
-curstate = "singleplayer"
+love.filesystem.require("menu.lua")
+curstate = "menu"
 
 function load()
 	for i, v in ipairs(states) do
@@ -39,12 +42,12 @@ function keyreleased(key)
 	_G[curstate]:keyreleased(key)
 end
 
-function mousepressed(button, x, y)
-	_G[curstate]:mousepressed(button, x, y)
+function mousepressed(x, y, button)
+	_G[curstate]:mousepressed(x, y, button)
 end
 
-function mousereleased(button, x, y)
-	_G[curstate]:mousereleased(button, x, y)
+function mousereleased(x, y, button)
+	_G[curstate]:mousereleased(x, y, button)
 end
 
 function activatestate(state)

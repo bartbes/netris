@@ -6,6 +6,7 @@ function singleplayer:load()
 end
 
 function singleplayer:activated()
+	game:activated()
 	localplayer = 1
 	activeplayer = 1
 	players[1] = player:new("LocalPlayer", 0)
@@ -35,5 +36,17 @@ function singleplayer:mousepressed()
 end
 
 function singleplayer:mousereleased()
+	return
+end
+
+function singleplayer:lineremoved()
+	return
+end
+
+function singleplayer:blockplaced()
+	return
+end
+
+function singleplayer:blockadded()
 	return
 end

@@ -12,9 +12,22 @@ function game:load()
 	speed = 1
 	timer2 = 10
 	localplayer = 0
-	activeplayer = 0
+	activeplayer = -1
 	players = {}
 	math.randomseed(os.time())
+end
+
+function game:activated()
+	blocks = {}
+	activeblocks = false
+	timer = 0
+	time = 0
+	score = 0
+	speed = 1
+	timer2 = 10
+	localplayer = 0
+	activeplayer = -1
+	players = {}
 end
 
 function game:update(dt)
@@ -43,6 +56,7 @@ function game:update(dt)
 			end
 		end
 		activeblocks = checkactive()
+		if not activeblocks and activeplayer == localplayer then _G[curstate]:blockplaced() end
 		if not activeblocks and activeplayer == localplayer then
 			activepiece = pieceindexes[math.random(1, #pieceindexes)]
 			activerotation = 0
@@ -61,7 +75,7 @@ function game:update(dt)
 				table.remove(blocks, v+1-j)
 			end
 			dropblocks(i)
-			score = score + 100
+			_G[curstate]:lineremoved()
 		end
 	end
 	for i, v in ipairs(blocks) do
@@ -123,6 +137,7 @@ function game.drawhud()
 		if i == activeplayer then
 			love.graphics.draw("*", 644, 120+20*c)
 		end
+		c = c + 1
 	end
 end
 
@@ -137,6 +152,7 @@ function game:keypressed(key)
 	if key == love.key_q then
 		love.system.exit()
 	elseif key == love.key_left then
+		if localplayer ~= activeplayer then return end
 		local possible = true
 		for i, v in ipairs(blocks) do
 			if v.active and (v.x == 1 or collision(v, -1, 0, true)) then
@@ -152,6 +168,7 @@ function game:keypressed(key)
 			end
 		end
 	elseif key == love.key_right then
+		if localplayer ~= activeplayer then return end
 		local possible = true
 		for i, v in ipairs(blocks) do
 			if v.active and (v.x == 12 or collision(v, 1, 0, true)) then
@@ -167,6 +184,7 @@ function game:keypressed(key)
 			end
 		end
 	elseif key == love.key_up then
+		if localplayer ~= activeplayer then return end
 		local activeblocks = {}
 		for i, v in ipairs(blocks) do
 			if v.active then

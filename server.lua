@@ -5,10 +5,12 @@ function server:load()
 end
 
 function server:activated()
+	game:activated()
 	startserver()
 	localplayer = 1
 	activeplayer = 1
 	players[1] = player:new("LocalPlayer", 0)
+	self.counter = 0
 end
 
 function server:deactived()
@@ -38,5 +40,24 @@ end
 
 function server:mousereleased()
 	return
+end
+
+function server:lineremoved()
+	score = score + 100
+	sendscore(score)
+end
+
+function server:blockplaced()
+	activeplayer = activeplayer + 1
+	if activeplayer > #players then activeplayer = 1 end
+	sendactive(activeplayer)
+end
+
+function server:blockadded()
+	self.counter = self.counter + 1
+	if self.counter == 4 then
+		self.counter = 0
+		return self:blockplaced()
+	end
 end
 

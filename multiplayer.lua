@@ -7,6 +7,7 @@ function multiplayer:load()
 end
 
 function multiplayer:activated()
+	game:activated()
 	connect(host, port)
 end
 
@@ -36,6 +37,18 @@ function multiplayer:mousepressed()
 end
 
 function multiplayer:mousereleased()
+	return
+end
+
+function multiplayer:lineremoved()
+	return
+end
+
+function multiplayer:blockplaced()
+	return
+end
+
+function multiplayer:blockadded()
 	return
 end
 

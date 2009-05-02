@@ -3,7 +3,7 @@ defport = 8188
 is_server = false
 
 function rcvCallback(data)
-	local it = data:gmatch("([^ \n]*)")
+	local it = data:gmatch("([^ \n]*)[ \n]?")
 	local command = it()
 	if command == "activePlayer" then
 		activeplayer = tonumber(it())
@@ -17,6 +17,7 @@ function rcvCallback(data)
 		local b = tonumber(it())
 		table.insert(blocks, block:new(r, g, b, x, y, false))
 		blocks[#blocks].resting = true
+		_G[curstate]:blockadded()
 	elseif command == "playerScore" then
 		local player = tonumber(it())
 		local score = tonumber(it())
@@ -34,7 +35,33 @@ function rcvCallback(data)
 	elseif command == "gameScore" then
 		local sc = tonumber(it())
 		score = sc
+	elseif command == "playerName" then
+		local num = tonumber(it())
+		local name = it()
+		players[num].name = name
+	elseif command == "yourNumber" then
+		local num = tonumber(it())
+		localplayer = num
 	end
+	if is_server then conn:send(data) end
+end
+
+function connCallback(ip, port)
+	conn:send("addPlayer " .. #players+1 .. " UnnamedPlayer 0\n")
+	for i, v in pairs(players) do
+		conn:send("addPlayer " .. i .. " " .. v.name .. " " .. v.score .. "\n", ip)
+	end
+	for i, v in pairs(blocks) do
+		if not v.active and v.resting then
+			conn:send(string.format("addblock %d %d %d %d %d", v.x, v.y, v.red, v.green, v.blue))
+		end
+	end
+	conn:send("activePlayer " .. activeplayer .. "\n", ip)
+	conn:send("yourNumber " .. #players+1 .. "\n", ip)
+	players[#players+1] = player:new("UnnamedPlayer", 0)
+end
+
+function disconnCallback(ip, port)
 end
 
 function connect(ip, port)
@@ -90,7 +117,20 @@ function startserver(port)
 	conn = lube.server(port)
 	conn:setHandshake("Netris rules!")
 	conn:setPing(true, 3, "NetrisPing")
-	conn:setCallback(rcvCallback)
+	conn:setCallback(rcvCallback, connCallback, disconnCallback)
 	connected = true
 	is_server = true
 end
+
+function sendscore(score, player)
+	if player then
+		conn:send("playerScore " .. player .. " " .. score .. "\n")
+	else
+		conn:send("gameScore " .. score .. "\n")
+	end
+end
+
+function sendactive(activeplayer)
+	conn:send("activePlayer " .. activeplayer .. "\n")
+end
+
