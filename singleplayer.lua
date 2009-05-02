@@ -11,6 +11,9 @@ function singleplayer:activated()
 	players[1] = player:new("LocalPlayer", 0)
 end
 
+function singleplayer:deactivated()
+end
+
 function singleplayer:update(dt)
 	game:update(dt)
 end

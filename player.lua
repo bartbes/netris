@@ -4,10 +4,8 @@ player.name = "NoName"
 player.score = 0
 
 function player:init(name, score)
-	name = name or self.name
-	score = score or self.score
-	self.name = self.name
-	self.score = self.score
+	self.name = name or self.name
+	self.score = score or self.score
 end
 
 function player:setName(n)

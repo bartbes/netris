@@ -12,6 +12,8 @@ love.filesystem.require("protocol.lua")
 states = {}
 love.filesystem.require("game.lua")
 love.filesystem.require("singleplayer.lua")
+love.filesystem.require("multiplayer.lua")
+love.filesystem.require("server.lua")
 curstate = "singleplayer"
 
 function load()

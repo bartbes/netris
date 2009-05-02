@@ -68,7 +68,9 @@ end
 function updateconn(dt)
 	if connected then
 		conn:update()
-		conn:doPing(dt)
+--[[		if not is_server then conn:doPing(dt)
+		else conn:checkPing(dt)
+		end]]
 	end
 end
 
