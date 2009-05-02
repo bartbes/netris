@@ -68,6 +68,12 @@ function checkblock(block)
 	end
 end
 
+function dropblocks(line)
+	for i, v in pairs(blocks) do
+		if v.y < line then v.y = v.y + 1 end
+	end
+end
+
 function update(dt)
 	love.timer.sleep(100)
 	local drop = love.keyboard.isDown(love.key_down)
@@ -110,6 +116,7 @@ function update(dt)
 			for j, v in ipairs(lineblocks) do
 				table.remove(blocks, v+1-j)
 			end
+			dropblocks(i)
 			score = score + 100
 		end
 	end
