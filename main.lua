@@ -67,6 +67,13 @@ function dropblocks(line)
 	end
 end
 
+function checkactive()
+	for i, v in pairs(blocks) do
+		if v.active then return true end
+	end
+	return false
+end
+
 function update(dt)
 	love.timer.sleep(100)
 	local drop = love.keyboard.isDown(love.key_down)
@@ -92,6 +99,7 @@ function update(dt)
 				v.y = v.y + 1
 			end
 		end
+		activeblocks = checkactive()
 		if not activeblocks then
 			activepiece = pieceindexes[math.random(1, #pieceindexes)]
 			activerotation = 0
