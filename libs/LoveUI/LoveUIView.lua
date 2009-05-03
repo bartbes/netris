@@ -108,14 +108,17 @@ function LoveUI.View:displaySubviews()
 				LoveUI.pushMatrix()
 				LoveUI.translate(v.frame.origin:get())
 				v:preDisplay()
+				--local x, y, w, h=v:getScissor()
 				if not v.escapeScissor then
 					LoveUI.graphics.setScissor(v:getScissor())
 				else
 					LoveUI.graphics.setScissor();
 				end
-				v:display();
+				--if  v.escapeScissor or (h>0 and w > 0) then
+					v:display();
 				
-				v:displaySubviews();
+					v:displaySubviews();
+				--end
 				LoveUI.popMatrix()
 				self.context:restoreGraphicsEnvironment()
 				v:postDisplay()

@@ -19,6 +19,7 @@ function LoveUI.Object:copy()
 					if self[k][j]==self then
 						cpy[k][j]=cpy; --restore self references
 					else
+						
 						cpy[k][j]=w
 					end
 				end

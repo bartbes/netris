@@ -23,7 +23,7 @@ function LoveUI.ListCell:setContentView(aView)
 	if self.subviews[1] then
 		self.removeSubview(self.subviews[1])
 	end
-	aView=aView:copy();
+	--aView=aView:copy();
 	self:addSubview(aView);
 	self.contentView=aView;
 	self.contentView:setFrame(LoveUI.Rect:new(0,0, self.frame.size:get()))

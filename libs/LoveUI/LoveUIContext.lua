@@ -285,8 +285,8 @@ function LoveUI.Context:mouseUp(theEvent)
 	if self.firstResponder~=nil then
 		-- Forward thEvent to the responder
 		self.firstResponder:mouseUp(theEvent)
-		if self.firstResponder:resignFirstResponder() then
-			self.firstResponder=self.contentView;
-		end
+		--if self.firstResponder:resignFirstResponder() then
+			--self.firstResponder=self.contentView;
+		--end
 	end
 end

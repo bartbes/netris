@@ -133,7 +133,6 @@ function LoveUI.ScrollView:setOffset(aPoint)
 		self.horizontalScroller:setValue(-aPoint.x/(self.contentView.frame.size.width-self.frame.size.width));
 		self.clipView:setOffset(LoveUI.Point:new(-self.horizontalScroller:getValue()*(self.contentView.frame.size.width-self.frame.size.width), self.clipView.offset.y));
 	end
-	
 
 end
 

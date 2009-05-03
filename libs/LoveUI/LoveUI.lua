@@ -1,4 +1,6 @@
---love.filesystem.require("Library/class.lua");
+
+
+
 do
 	LoveUI={};
 	LoveUI.images={};
@@ -15,23 +17,37 @@ do
 		LoveUI.mouse[k]=v;
 	end
 	
-	
-	local LIBRARY_NAME="LoveUI";
+	local PATHS={}
+	PATHS.LIBRARY_DIR="Library";
+	PATHS.LIBRARY_NAME="LoveUI";
 	
 	function LoveUI.error(message, level)
 		-- custom error function
 		-- if level is 1, then console will show the function that called LoveUI.error
 		if level==nil then level= 1 end;
-		error(LIBRARY_NAME.." library: "..message, 2+level);
+		error(PATHS.LIBRARY_NAME.." library: "..message, 2+level);
 	end
 	
 	function LoveUI:getImage(imageName)
 		if self.images[imageName]~= nil then
 			return self.images[imageName]
 		end
-		local imagePath="libs/LoveUI/images/"..imageName
+		local imagePath=PATHS.LIBRARY_DIR.."/"..PATHS.LIBRARY_NAME.."/images/"..imageName
 		self.images[imageName] = LoveUI.graphics.newImage(imagePath)
 		return self.images[imageName]
+	end
+	
+	function LoveUI.bind(object1, key1, object2, key2, returnFunction)
+		object1[key1]=nil;
+		object1:setmetamethod("__index", 
+			function(t, key)
+				if key==key1 then 
+					return returnFunction(object2[key2]);
+				end
+				if rawget(t, "__baseclass") then
+					return t.__baseclass[key]
+				end
+			end)
 	end
 	
 	--Constants:
@@ -73,8 +89,9 @@ do
 	end
 	
 	LoveUI.require=function(fileName)
-		love.filesystem.require("libs/LoveUI/"..fileName);
+		love.filesystem.require(PATHS.LIBRARY_DIR.."/"..PATHS.LIBRARY_NAME.."/"..fileName);
 	end
+	
 	LoveUI.copy=function(aTable)
 		local cpy={};
 		for k, v in pairs(aTable) do
@@ -83,6 +100,8 @@ do
 		return cpy;
 	end
 	LoveUI.requireall=function(dir)
+		dir="";
+		dir=PATHS.LIBRARY_DIR.."/"..PATHS.LIBRARY_NAME;
 		love.filesystem.require(dir.."/LoveUIContext.lua");
 		love.filesystem.require(dir.."/LoveUIClipView.lua");
 		love.filesystem.require(dir.."/LoveUITextfield.lua");
@@ -233,9 +252,26 @@ do
 		
 		
 	end
-
+	
+	for f, n in pairs(love.filesystem.enumerate("")) do
+		if n=="Library" then
+			PATHS.LIBRARY_DIR="Library";
+			break
+		end
+		if n=="library" then
+			PATHS.LIBRARY_DIR="library";
+			break
+		end
+		if n=="libs" then
+			PATHS.LIBRARY_DIR="libs";
+			break
+		end
+	end
+	
+	love.filesystem.require(PATHS.LIBRARY_DIR.."/class.lua");
+	LoveUI.require("LoveUIStack.lua");
+	LoveUI.require("LoveUIRect.lua");
+	LoveUI.graphicsMatrixStack=LoveUI.Stack:new();
+	LoveUI.rectZero=LoveUI.Rect:new(0,0,0,0)
 end
-LoveUI.require("LoveUIStack.lua");
-LoveUI.require("LoveUIRect.lua");
-LoveUI.graphicsMatrixStack=LoveUI.Stack:new();
-LoveUI.rectZero=LoveUI.Rect:new(0,0,0,0)
+

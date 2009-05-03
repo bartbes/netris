@@ -93,9 +93,9 @@ function LoveUI.TextfieldCell:drawImage(frame, view)
 	end
 	
 	local curImage=self.image;
-	--if self.state==LoveUI.OFF then
+	if curImage then
 		LoveUI.graphics.draw(curImage, frame.size.width/2, frame.size.height/2,0, frame.size.width/self.image:getWidth(), frame.size.height/self.image:getHeight());
-	--end
+	end
 end
 
 

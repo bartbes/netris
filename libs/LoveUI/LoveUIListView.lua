@@ -10,20 +10,29 @@ function LoveUI.ListView:init(frame, datasource, ...)
 	self.scrollView=LoveUI.ScrollView:new(LoveUI.Rect:new(0,0,frame.size:get()), LoveUI.Rect:new(0,0,frame.size:get()));
 	self:addSubview(self.scrollView)
 	self.opaque=true;
-	self.cellSpacing=0;
+	self.cellSpacing=1;
 	self.cellHeight=24;
-	self.selectedIndex=-1;
-	self:reloadData()
+	self.selectedIndex=nil;
 	self.controlEvents={}
+	self:reloadData()
+	
 	return self;
 end
 
+function LoveUI.ListView:rowAtIndex(index)
+	return self.scrollView.contentView.subviews[index];
+end
+
 function LoveUI.ListView:reloadData()
+	local n=self.dataSource:numberOfRows();
+	if self.selectedIndex and (self.selectedIndex>n or self.selectedIndex<1) then
+		self.selectedIndex=nil;
+	end
 	while #self.scrollView.contentView.subviews > 0 do
 		self.scrollView.contentView:removeSubview(self.scrollView.contentView.subviews[1]);
 	end
 	local coluWidth=math.max(self.frame.size.width, self.dataSource:columnWidth());
-	local n=self.dataSource:numberOfRows();
+	
 	local i;
 	for i=0, n-1, 1 do
 		self.scrollView.contentView:addSubview(
@@ -35,19 +44,84 @@ function LoveUI.ListView:reloadData()
 		end
 	end
 	self.scrollView:setContentSize(LoveUI.Size:new(coluWidth, (self.cellHeight+self.cellSpacing)*(n)+5))
+	if self.selectedIndex and (self.selectedIndex>n or self.selectedIndex<1) then
+		self.selectedIndex=nil;
+	end
+	self:setSelectedIndex(self.selectedIndex)
+end
+
+function LoveUI.ListView:mouseUp(theEvent)
+	if theEvent.button==love.mouse_right then
+		self:setSelectedIndex(nil);
+	else
+		if self.nextResponder then
+			self.nextResponder:mouseUp(theEvent)
+		end
+	end
+end
+
+function LoveUI.ListView:keyDown(theEvent)
+	if theEvent.keyCode==love.key_up then
+		if not self.selectedIndex then
+			self:setSelectedIndex(self.dataSource:numberOfRows());
+		end
+		self:setSelectedIndex(self.selectedIndex-1);
+		if not self.selectedIndex then
+			self:setSelectedIndex(1);
+		end
+		local f= self:rowAtIndex(self.selectedIndex);
+		local x, y, w, h = f:getScissor();
+		local fx, fy = f:convertOriginToBase()
+		local bx, by=self:convertOriginToBase()
+		if h<self.cellHeight and fy > by then
+			self.scrollView:addOffset(LoveUI.Point:new(0, h-self.cellHeight+1))
+		elseif  h<self.cellHeight then
+			self.scrollView:addOffset(LoveUI.Point:new(0, self.cellHeight-h+1))
+		end
+		return;
+	end
+	if theEvent.keyCode==love.key_down then
+		if not self.selectedIndex then
+			self.selectedIndex=1
+		end
+		self:setSelectedIndex(self.selectedIndex+1);
+		if not self.selectedIndex then
+			self:setSelectedIndex(self.dataSource:numberOfRows());
+		end
+		local f= self:rowAtIndex(self.selectedIndex);
+		local x, y, w, h = f:getScissor();
+		local fx, fy = f:convertOriginToBase()
+		local bx, by=self:convertOriginToBase()
+		if h<self.cellHeight and fy < by then
+			self.scrollView:addOffset(LoveUI.Point:new(0, self.cellHeight-h+3))
+		elseif h<self.cellHeight then
+			self.scrollView:addOffset(LoveUI.Point:new(0, h-self.cellHeight-3))
+		end
+		return;
+	end
+	if self.nextResponder then
+		self.nextResponder:keyDown(theEvent)
+	end
 end
 
 function LoveUI.ListView:setSelectedIndex(index)
-	local origIndex=self.selectedIndex
-	if self.selectedIndex~=-1 then
+	--local origIndex=self.selectedIndex
+	if index and (index <1 or index > self.dataSource:numberOfRows()) then
+		index=self.selectedIndex
+	end
+	if self.selectedIndex then
 		self.scrollView.contentView.subviews[self.selectedIndex].selected=false;
 	end
+	
 	self.selectedIndex=index;
-	self.scrollView.contentView.subviews[self.selectedIndex].selected=true;
-	if self.selectedIndex~=origIndex then
+	if self.selectedIndex then
+		self.scrollView.contentView.subviews[self.selectedIndex].selected=true;
+	end
+	
+	--if self.selectedIndex~=origIndex then
 		self:activateControlEvent(self, LoveUI.EventDefault ,theEvent, self.selectedIndex);
 		self:activateControlEvent(self, LoveUI.EventValueChanged ,theEvent, self.selectedIndex);
-	end
+	--end
 end
 
 function LoveUI.ListView:setAction(anAction, forControlEvent, aTarget)
@@ -63,6 +137,7 @@ function LoveUI.ListView:setAction(anAction, forControlEvent, aTarget)
 end
 
 function LoveUI.ListView:activateControlEvent(sender, forControlEvent, ...)
+	
 	if self.controlEvents[forControlEvent]~=nil then
 		self.controlEvents[forControlEvent](sender, ...);
 	end

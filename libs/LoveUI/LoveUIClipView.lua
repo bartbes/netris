@@ -14,6 +14,8 @@ function LoveUI.ClipView:getOffset()
 end
 
 function LoveUI.ClipView:addOffset(aPoint)
+	aPoint.x=math.floor(aPoint.x)
+	aPoint.y=math.floor(aPoint.y)
 	for k, view in pairs(self.subviews) do
 		view.frame.origin=view.frame.origin-self.offset;
 	end
@@ -25,6 +27,8 @@ function LoveUI.ClipView:addOffset(aPoint)
 end
 
 function LoveUI.ClipView:setOffset(aPoint)
+	aPoint.x=math.floor(aPoint.x)
+	aPoint.y=math.floor(aPoint.y)
 	for k, view in pairs(self.subviews) do
 		view.frame.origin=view.frame.origin-self.offset;
 	end
