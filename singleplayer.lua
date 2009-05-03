@@ -10,6 +10,7 @@ function singleplayer:activated()
 	localplayer = 1
 	activeplayer = 1
 	players[1] = player:new(player_name, 0)
+	is_server = true
 end
 
 function singleplayer:deactivated()
@@ -40,7 +41,7 @@ function singleplayer:mousereleased()
 end
 
 function singleplayer:lineremoved()
-	return
+	score = score + 100
 end
 
 function singleplayer:blockplaced()

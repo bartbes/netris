@@ -48,6 +48,17 @@ function rcvCallback(data, ip, port)
 		conn:send("playerName " .. num .. " " .. player_name .. "\n")
 	elseif command == "blockPlaced" and is_server then
 		_G[curstate]:blockplaced()
+	elseif command == "removeLine" and not is_server then
+		local l = tonumber(it())
+		local lineblocks = {}
+		for i, v in ipairs(blocks) do
+			if v.y == l then table.insert(lineblocks, i) end
+		end
+		for i, v in ipairs(lineblocks) do
+			table.remove(blocks, v+1-i)
+		end
+		dropblocks(l)
+		_G[curstate]:lineremoved(l)
 	elseif command == "SERVBROWSER_DISCOVER" and is_server then
 		conn.socket:sendto("SERVER_IDENTIFY", ip, port) --the normal interface wants 'connected' people, so use the raw one
 		return --don't send it to our clients
@@ -165,4 +176,7 @@ function tellblockplaced()
 	conn:send("blockPlaced\n")
 end
 
+function removeline(line)
+	conn:send("removeLine " .. line .. "\n")
+end
 

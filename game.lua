@@ -69,17 +69,19 @@ function game:update(dt)
 		end
 		timer2 = 0
 	end
-	for i = 1, 12 do
-		local lineblocks = {}
-		for j, v in ipairs(blocks) do
-			if v.y == i and v.resting then table.insert(lineblocks, j) end
-		end
-		if #lineblocks == 12 then
-			for j, v in ipairs(lineblocks) do
-				table.remove(blocks, v+1-j)
+	if is_server then
+		for i = 1, 12 do
+			local lineblocks = {}
+			for j, v in ipairs(blocks) do
+				if v.y == i and v.resting and not v.active then table.insert(lineblocks, j) end
 			end
-			dropblocks(i)
-			_G[curstate]:lineremoved()
+			if #lineblocks == 12 then
+				for j, v in ipairs(lineblocks) do
+					table.remove(blocks, v+1-j)
+				end
+				dropblocks(i)
+				_G[curstate]:lineremoved(i)
+			end
 		end
 	end
 	for i, v in ipairs(blocks) do

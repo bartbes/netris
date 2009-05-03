@@ -43,9 +43,10 @@ function server:mousereleased()
 	return
 end
 
-function server:lineremoved()
+function server:lineremoved(l)
 	score = score + 100
 	sendscore(score)
+	removeline(l)
 end
 
 function server:blockplaced()
