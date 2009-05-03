@@ -20,6 +20,8 @@ love.filesystem.require("menu.lua")
 love.filesystem.require("browser.lua")
 curstate = "menu"
 
+version = "0.01"
+
 function load()
 	for i, v in ipairs(states) do
 		_G[v]:load()

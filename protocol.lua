@@ -2,10 +2,10 @@ connected = false
 defport = 8188
 is_server = false
 
-function rcvCallback(data)
+function rcvCallback(data, ip, port)
 	local it = data:gmatch("([^ \n]*)[ \n]?")
 	local command = it()
-	if command == "activePlayer" then
+	if command == "activePlayer" and not is_server then
 		activeplayer = tonumber(it())
 	elseif command == "setPlayer" then
 		localplayer = tonumber(it())
@@ -27,6 +27,7 @@ function rcvCallback(data)
 		local name = it()
 		local score = tonumber(it())
 		players[num] = player:new(name, score)
+		return
 	elseif command == "removePlayer" then
 		local num = tonumber(it())
 		local msg = it()
@@ -42,6 +43,12 @@ function rcvCallback(data)
 	elseif command == "yourNumber" then
 		local num = tonumber(it())
 		localplayer = num
+	elseif command == "SERVBROWSER_DISCOVER" and is_server then
+		conn.socket:sendto("SERVER_IDENTIFY", ip, port) --the normal interface wants 'connected' people
+		return --don't send it to our clients
+	elseif command == "SERVBROWSER_POLL" and is_server then
+		conn.socket:sendto("SERVER_INFO:" .. server_name .. ":" .. version .. ":", ip, port)
+		return
 	end
 	if is_server then conn:send(data) end
 end

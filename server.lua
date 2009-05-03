@@ -2,6 +2,7 @@ table.insert(states, "server")
 server = {}
 
 function server:load()
+	server_name = "UnnamedServer"
 end
 
 function server:activated()
