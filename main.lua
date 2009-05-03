@@ -17,6 +17,7 @@ love.filesystem.require("singleplayer.lua")
 love.filesystem.require("multiplayer.lua")
 love.filesystem.require("server.lua")
 love.filesystem.require("menu.lua")
+love.filesystem.require("browser.lua")
 curstate = "menu"
 
 function load()
@@ -35,6 +36,7 @@ function draw()
 end
 
 function keypressed(key)
+	if key == love.key_escape then activatestate("menu") end
 	_G[curstate]:keypressed(key)
 end
 
@@ -51,6 +53,7 @@ function mousereleased(x, y, button)
 end
 
 function activatestate(state)
+	_G[curstate]:deactivated()
 	curstate = state
 	_G[state]:activated()
 end

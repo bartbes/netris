@@ -14,6 +14,7 @@ function game:load()
 	localplayer = 0
 	activeplayer = -1
 	players = {}
+	lost = false
 	math.randomseed(os.time())
 end
 
@@ -28,6 +29,7 @@ function game:activated()
 	localplayer = 0
 	activeplayer = -1
 	players = {}
+	lost = false
 end
 
 function game:update(dt)
@@ -81,7 +83,8 @@ function game:update(dt)
 	for i, v in ipairs(blocks) do
 		if v.y == 1 and not v.active then
 			print("You lost!")
-			love.system.exit()
+			lost = true
+			activatestate("menu")
 		end
 	end
 	timer = timer + dt

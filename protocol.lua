@@ -103,7 +103,8 @@ end
 
 function disconnect()
 	if connected then
-		conn:disconnect()
+		if not is_server then conn:disconnect() end
+		connected = false
 		conn = nil
 		is_server = false
 	end

@@ -9,7 +9,7 @@ function menu:load()
 	self.btn_single:setAction(self.btnhandler)
 	self.btn_multi = LoveUI.Button:new(LoveUI.Rect:new(200, 120, 400, 50))
 	self.btn_multi.title = "Multi Player"
-	self.btn_multi.value = "multiplayer"
+	self.btn_multi.value = "browser"
 	self.btn_multi:setAction(self.btnhandler)
 	self.btn_server = LoveUI.Button:new(LoveUI.Rect:new(200, 190, 400, 50))
 	self.btn_server.title = "Start a server"
@@ -41,6 +41,7 @@ function menu:update(dt)
 end
 
 function menu:draw()
+	if lost then love.graphics.draw("You lost!", 350, 306) end
 	self.context:display()
 end
 

@@ -13,7 +13,7 @@ function server:activated()
 	self.counter = 0
 end
 
-function server:deactived()
+function server:deactivated()
 	disconnect()
 end
 

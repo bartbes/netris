@@ -11,7 +11,7 @@ function multiplayer:activated()
 	connect(host, port)
 end
 
-function multiplayer:deactived()
+function multiplayer:deactivated()
 	disconnect()
 end
 
