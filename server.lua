@@ -10,7 +10,7 @@ function server:activated()
 	startserver()
 	localplayer = 1
 	activeplayer = 1
-	players[1] = player:new("LocalPlayer", 0)
+	players[1] = player:new(player_name, 0)
 	self.counter = 0
 end
 

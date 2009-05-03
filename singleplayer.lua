@@ -9,7 +9,7 @@ function singleplayer:activated()
 	game:activated()
 	localplayer = 1
 	activeplayer = 1
-	players[1] = player:new("LocalPlayer", 0)
+	players[1] = player:new(player_name, 0)
 end
 
 function singleplayer:deactivated()

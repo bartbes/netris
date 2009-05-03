@@ -44,6 +44,8 @@ function rcvCallback(data, ip, port)
 	elseif command == "yourNumber" then
 		local num = tonumber(it())
 		localplayer = num
+		players[num].name = player_name
+		conn:send("playerName " .. num .. " " .. player_name .. "\n")
 	elseif command == "blockPlaced" and is_server then
 		_G[curstate]:blockplaced()
 	elseif command == "SERVBROWSER_DISCOVER" and is_server then
@@ -70,9 +72,19 @@ function connCallback(ip, port)
 	conn:send("yourNumber " .. #players+1 .. "\n", ip)
 	conn:send("gameScore " .. score .. "\n", ip)
 	players[#players+1] = player:new("UnnamedPlayer", 0)
+	players[#players].ip = ip
 end
 
 function disconnCallback(ip, port)
+	local p = 0
+	for i, v in pairs(players) do
+		if v.ip == ip then
+			p = i
+			break
+		end
+	end
+	players[p] = nil
+	conn:send("removePlayer " .. p .. "\n")
 end
 
 function connect(ip, port)

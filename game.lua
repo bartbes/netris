@@ -3,6 +3,7 @@ table.insert(states, "game")
 game = {}
 
 function game:load()
+	player_name = "UnnamedPlayer"
 	love.graphics.setFont(love.default_font, 12)
 	blocks = {}
 	activeblocks = false
