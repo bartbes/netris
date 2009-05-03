@@ -15,10 +15,14 @@ function menu:load()
 	self.btn_server.title = "Start a server"
 	self.btn_server.value = "server"
 	self.btn_server:setAction(self.btnhandler)
+	self.btn_config = LoveUI.Button:new(LoveUI.Rect:new(200, 260, 400, 50))
+	self.btn_config.title = "Configure"
+	self.btn_config.value = "config"
+	self.btn_config:setAction(self.btnhandler)
 	self.btn_exit = LoveUI.Button:new(LoveUI.Rect:new(200, 500, 400, 50))
 	self.btn_exit.title = "Exit game"
 	self.btn_exit:setAction(self.exit)
-	self.context:addSubview(self.btn_single, self.btn_multi, self.btn_server, self.btn_exit)
+	self.context:addSubview(self.btn_single, self.btn_multi, self.btn_server, self.btn_config, self.btn_exit)
 --	self.context:plugin()
 end
 

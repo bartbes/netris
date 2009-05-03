@@ -58,19 +58,20 @@ function game:update(dt)
 			end
 		end
 		activeblocks = checkactive()
-		if not activeblocks and activeplayer == localplayer then _G[curstate]:blockplaced() end
+		if not activeblocks and activeplayer == localplayer and placed_block then _G[curstate]:blockplaced() end
 		if not activeblocks and activeplayer == localplayer then
 			activepiece = pieceindexes[math.random(1, #pieceindexes)]
 			activerotation = 0
 			pieces[activepiece]:create(blocks, math.random(1, 8), 1, true)
 			activeblocks = true
+			placed_block = true
 		end
 		timer2 = 0
 	end
 	for i = 1, 12 do
 		local lineblocks = {}
 		for j, v in ipairs(blocks) do
-			if v.y == i then table.insert(lineblocks, j) end
+			if v.y == i and v.resting then table.insert(lineblocks, j) end
 		end
 		if #lineblocks == 12 then
 			for j, v in ipairs(lineblocks) do
@@ -153,6 +154,7 @@ end
 
 function game:keypressed(key)
 	if key == love.key_q then
+		_G[curstate]:deactivated()
 		love.system.exit()
 	elseif key == love.key_left then
 		if localplayer ~= activeplayer then return end

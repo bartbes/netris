@@ -18,6 +18,8 @@ love.filesystem.require("multiplayer.lua")
 love.filesystem.require("server.lua")
 love.filesystem.require("menu.lua")
 love.filesystem.require("browser.lua")
+love.filesystem.require("config.lua")
+love.filesystem.require("manualconnect.lua")
 curstate = "menu"
 
 version = "0.01"
@@ -80,6 +82,7 @@ function checkblock(block)
 				if v.active then
 					v.resting = true
 					v.active = false
+					reportback(v)
 				end
 			end
 			activeblocks = false

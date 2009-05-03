@@ -7,6 +7,7 @@ function rcvCallback(data, ip, port)
 	local command = it()
 	if command == "activePlayer" and not is_server then
 		activeplayer = tonumber(it())
+		placed_block = false
 	elseif command == "setPlayer" then
 		localplayer = tonumber(it())
 	elseif command == "addblock" then
@@ -43,8 +44,10 @@ function rcvCallback(data, ip, port)
 	elseif command == "yourNumber" then
 		local num = tonumber(it())
 		localplayer = num
+	elseif command == "blockPlaced" and is_server then
+		_G[curstate]:blockplaced()
 	elseif command == "SERVBROWSER_DISCOVER" and is_server then
-		conn.socket:sendto("SERVER_IDENTIFY", ip, port) --the normal interface wants 'connected' people
+		conn.socket:sendto("SERVER_IDENTIFY", ip, port) --the normal interface wants 'connected' people, so use the raw one
 		return --don't send it to our clients
 	elseif command == "SERVBROWSER_POLL" and is_server then
 		conn.socket:sendto("SERVER_INFO:" .. server_name .. ":" .. version .. ":", ip, port)
@@ -65,6 +68,7 @@ function connCallback(ip, port)
 	end
 	conn:send("activePlayer " .. activeplayer .. "\n", ip)
 	conn:send("yourNumber " .. #players+1 .. "\n", ip)
+	conn:send("gameScore " .. score .. "\n", ip)
 	players[#players+1] = player:new("UnnamedPlayer", 0)
 end
 
@@ -141,4 +145,9 @@ end
 function sendactive(activeplayer)
 	conn:send("activePlayer " .. activeplayer .. "\n")
 end
+
+function tellblockplaced()
+	conn:send("blockPlaced\n")
+end
+
 

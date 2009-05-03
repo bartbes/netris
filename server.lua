@@ -52,13 +52,9 @@ function server:blockplaced()
 	activeplayer = activeplayer + 1
 	if activeplayer > #players then activeplayer = 1 end
 	sendactive(activeplayer)
+	placed_block = false
 end
 
 function server:blockadded()
-	self.counter = self.counter + 1
-	if self.counter == 4 then
-		self.counter = 0
-		return self:blockplaced()
-	end
 end
 

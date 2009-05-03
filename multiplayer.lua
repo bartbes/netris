@@ -45,7 +45,8 @@ function multiplayer:lineremoved()
 end
 
 function multiplayer:blockplaced()
-	return
+	tellblockplaced()
+	activeplayer = 0
 end
 
 function multiplayer:blockadded()

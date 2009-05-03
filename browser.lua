@@ -34,11 +34,14 @@ function browser:activated()
 	self.btn_server.title = "Host"
 	self.btn_back = LoveUI.Button:new(LoveUI.Rect:new(350, 550, 100, 20))
 	self.btn_back.title = "Back"
+	self.btn_manual = LoveUI.Button:new(LoveUI.Rect:new(50, 550, 100, 20))
+	self.btn_manual.title = "Manual"
 	self.btn_connect:setAction(self.btnhandler)
 	self.btn_refresh:setAction(self.btnhandler)
 	self.btn_server:setAction(self.btnhandler)
 	self.btn_back:setAction(self.btnhandler)
-	self.context:addSubview(self.list, self.btn_connect, self.btn_refresh, self.btn_server, self.btn_back)
+	self.btn_manual:setAction(self.btnhandler)
+	self.context:addSubview(self.list, self.btn_connect, self.btn_refresh, self.btn_server, self.btn_back, self.btn_manual)
 end
 
 function browser.btnhandler(btn, mouseEvent)
@@ -54,6 +57,8 @@ function browser.btnhandler(btn, mouseEvent)
 		activatestate("server")
 	elseif btn.title == "Back" then
 		activatestate("menu")
+	elseif btn.title == "Manual" then
+		activatestate("manualconnect")
 	end
 end
 
