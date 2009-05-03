@@ -84,6 +84,9 @@ function disconnCallback(ip, port)
 		end
 	end
 	players[p] = nil
+	if p == activeplayer then
+		_G[curstate]:blockplaced()
+	end
 	conn:send("removePlayer " .. p .. "\n")
 end
 
