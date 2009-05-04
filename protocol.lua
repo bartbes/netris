@@ -110,7 +110,7 @@ function connect(ip, port)
 	conn:setHandshake("Netris rules!")
 	conn:setPing(true, 5, "NetrisPing")
 	conn:setCallback(rcvCallback)
-	conn:connect(ip, port)
+	conn:connect(ip, port, true)
 	connected = true
 	is_server = false
 end
