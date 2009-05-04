@@ -24,6 +24,8 @@ love.filesystem.require("modeselect.lua")
 curstate = "menu"
 
 version = "0.01"
+masterserver = "bartbes.ath.cx"
+masterport = 8189
 
 function load()
 	for i, v in ipairs(states) do

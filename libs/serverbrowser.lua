@@ -30,6 +30,8 @@ servbrowser.discover = "SERVBROWSER_DISCOVER"
 servbrowser.poll = "SERVBROWSER_POLL"
 servbrowser.identify = "SERVER_IDENTIFY"
 servbrowser.info = "SERVER_INFO"
+servbrowser.mastersearch = "SERVBROWSER_MASTERSEARCH"
+servbrowser.masterresult = "MASTERSERVER_RESULT"
 
 function servbrowser:init(port)
 	self.port = port
@@ -53,15 +55,36 @@ function servbrowser:receive()
 	if data == self.identify then
 		table.insert(self.servers, {ip = ip, port = port})
 		return #self.servers
+	else
+		local name, version, additional = data:gmatch(self.info .. ":([^:]*):([^:]*):(.*)")()
+		local sip, sport = data:gmatch(self.masterresult .. " ([0-9%.]*) ([0-9]*).*")()
+		if name and version and additional then
+			for s in additional:gmatch("([^:]*)") do
+				table.insert(args, s)
+			end
+			local id = 0
+			for i, v in pairs(self.servers) do
+				if v.ip == ip and v.port == port then
+					id = i
+					break
+				end
+			end
+			if id ~= 0 and name and version then
+				self.servers[id].name = name
+				self.servers[id].version = version
+				self.servers[id].args = args
+			end
+		elseif sip and sport then
+			table.insert(self.servers, {ip = sip, port = sport})
+			return #self.servers
+		end
 	end
 	return nil
 end
 
 function servbrowser:pollserver(id)
 	self.socket:sendto(self.poll, self.servers[id].ip, self.servers[id].port)
-	self.socket:settimeout(2)
 	data, ip, port = self.socket:receivefrom()
-	self.socket:settimeout(0.1)
 	if not data then return nil end
 	if data:sub(1, #self.info) == self.info and ip == self.servers[id].ip then
 		local name, version, additional = data:gmatch(self.info .. ":([^:]*):([^:]*):(.*)")()
@@ -77,5 +100,13 @@ function servbrowser:pollserver(id)
 		return name, version, args
 	end
 	return nil
+end
+
+function servbrowser:searchmaster(server, port)
+	local host = socket.dns.toip(server)
+	if not server then
+		return nil, "Can't get ip from DNS"
+	end
+	self.socket:sendto(self.mastersearch, host, port)
 end
 

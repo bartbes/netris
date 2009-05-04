@@ -65,6 +65,9 @@ function rcvCallback(data, ip, port)
 	elseif command == "SERVBROWSER_POLL" and is_server then
 		conn.socket:sendto("SERVER_INFO:" .. server_name .. ":" .. version .. ":", ip, port)
 		return
+	elseif command == "MASTERSERVER_CHECK" and is_server then
+		conn.socket:sendto("MASTERSERVER_CHECKPASS", ip, port)
+		return
 	end
 	if is_server then conn:send(data) end
 end
@@ -178,5 +181,13 @@ end
 
 function removeline(line)
 	conn:send("removeLine " .. line .. "\n")
+end
+
+function identifyatmaster(server, port)
+	local host = socket.dns.toip(server)
+	if not host then
+		return nil, "DNS failed"
+	end
+	conn.socket:sendto("MASTERSERVER_IDENTIFY", host, ip)
 end
 

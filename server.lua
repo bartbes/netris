@@ -15,6 +15,7 @@ function server:activated()
 	players[1] = player:new(player_name, 0)
 	self.counter = 0
 	self.lastblock = 0
+	identifyatmaster(masterserver, masterport)
 end
 
 function server:deactivated()

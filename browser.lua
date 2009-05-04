@@ -2,12 +2,8 @@ table.insert(states, "browser")
 browser = {}
 
 function browser:load()
-end
-
-function browser:activated()
 	self.context = LoveUI.Context:new()
 	self.br = servbrowser:new(defport)
-	self.br:search()
 	self.servs = 0
 	--data object (as copied from the demo of LoveUI, credits to appleide)
 	local data={};
@@ -42,6 +38,12 @@ function browser:activated()
 	self.btn_back:setAction(self.btnhandler)
 	self.btn_manual:setAction(self.btnhandler)
 	self.context:addSubview(self.list, self.btn_connect, self.btn_refresh, self.btn_server, self.btn_back, self.btn_manual)
+end
+
+function browser:activated()
+	self.br.servers = {}
+	self.servs = 0	self.br:search()
+	self.br:searchmaster(masterserver, masterport)
 end
 
 function browser.btnhandler(btn, mouseEvent)
