@@ -59,6 +59,7 @@ function servbrowser:receive()
 		local name, version, additional = data:gmatch(self.info .. ":([^:]*):([^:]*):(.*)")()
 		local sip, sport = data:gmatch(self.masterresult .. " ([0-9%.]*) ([0-9]*).*")()
 		if name and version and additional then
+			local args = {}
 			for s in additional:gmatch("([^:]*)") do
 				table.insert(args, s)
 			end
@@ -88,7 +89,7 @@ function servbrowser:pollserver(id)
 	if not data then return nil end
 	if data:sub(1, #self.info) == self.info and ip == self.servers[id].ip then
 		local name, version, additional = data:gmatch(self.info .. ":([^:]*):([^:]*):(.*)")()
-		args = {}
+		local args = {}
 		for s in additional:gmatch("([^:]*)") do
 			table.insert(args, s)
 		end
