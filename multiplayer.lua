@@ -8,7 +8,7 @@ end
 
 function multiplayer:activated()
 	game:activated()
-	connect(host, port)
+	connect(host, port, true)
 end
 
 function multiplayer:deactivated()
