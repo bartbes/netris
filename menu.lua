@@ -5,19 +5,19 @@ function menu:load()
 	self.context = LoveUI.Context:new()
 	self.btn_single = LoveUI.Button:new(LoveUI.Rect:new(200, 50, 400, 50))
 	self.btn_single.title = "Single Player"
-	self.btn_single.value = "singleplayer"
+	self.btn_single.internal = "singleplayer"
 	self.btn_single:setAction(self.btnhandler)
 	self.btn_multi = LoveUI.Button:new(LoveUI.Rect:new(200, 120, 400, 50))
 	self.btn_multi.title = "Multi Player"
-	self.btn_multi.value = "browser"
+	self.btn_multi.internal = "browser"
 	self.btn_multi:setAction(self.btnhandler)
 	self.btn_server = LoveUI.Button:new(LoveUI.Rect:new(200, 190, 400, 50))
 	self.btn_server.title = "Start a server"
-	self.btn_server.value = "modeselect"
+	self.btn_server.internal = "modeselect"
 	self.btn_server:setAction(self.btnhandler)
 	self.btn_config = LoveUI.Button:new(LoveUI.Rect:new(200, 260, 400, 50))
 	self.btn_config.title = "Configure"
-	self.btn_config.value = "config"
+	self.btn_config.internal = "config"
 	self.btn_config:setAction(self.btnhandler)
 	self.btn_exit = LoveUI.Button:new(LoveUI.Rect:new(200, 500, 400, 50))
 	self.btn_exit.title = "Exit game"
@@ -27,7 +27,7 @@ function menu:load()
 end
 
 function menu.btnhandler(btn)
-	activatestate(btn.value)
+	activatestate(btn.internal)
 end
 
 function menu.exit()
