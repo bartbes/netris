@@ -21,6 +21,10 @@ function server:deactivated()
 end
 
 function server:update(dt)
+	self.lastblock = self.lastblock + dt
+	if self.lastblock >= 17 then
+		self:blockplaced()
+	end
 	updateconn(dt)
 	game:update(dt)
 end
@@ -50,6 +54,7 @@ function server:lineremoved(l)
 end
 
 function server:blockplaced()
+	self.lastblock = 0
 	server[gamemode]:blockplaced()
 end
 
