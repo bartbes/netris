@@ -96,7 +96,6 @@ function game:update(dt)
 		time = gettime()
 		timer = 0
 	end
-	updateconn()
 end
 
 function game.drawgrid()
