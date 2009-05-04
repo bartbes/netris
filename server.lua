@@ -14,6 +14,7 @@ function server:activated()
 	controlplayer = 1
 	players[1] = player:new(player_name, 0)
 	self.counter = 0
+	self.lastblock = 0
 end
 
 function server:deactivated()
