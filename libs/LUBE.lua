@@ -435,6 +435,8 @@ function lube.server:update()
 		elseif data == self.ping.msg then
 			self.ping.queue[ip] = nil
 			return
+		else
+			self.ping.queue[ip] = nil
 		end
 		self.recvcallback(data, ip, port)
 		data, ip, port = self:receive()

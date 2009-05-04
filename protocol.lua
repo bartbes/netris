@@ -108,7 +108,7 @@ function connect(ip, port)
 	port = port or defport
 	conn = lube.client()
 	conn:setHandshake("Netris rules!")
-	conn:setPing(true, 10, "NetrisPing")
+	conn:setPing(true, 5, "NetrisPing")
 	conn:setCallback(rcvCallback)
 	conn:connect(ip, port, true)
 	connected = true
@@ -154,7 +154,7 @@ function startserver(port)
 	end
 	conn = lube.server(port)
 	conn:setHandshake("Netris rules!")
-	conn:setPing(true, 10, "NetrisPing")
+	conn:setPing(true, 15, "NetrisPing")
 	conn:setCallback(rcvCallback, connCallback, disconnCallback)
 	connected = true
 	is_server = true
