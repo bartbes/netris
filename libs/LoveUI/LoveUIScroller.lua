@@ -16,7 +16,7 @@ function LoveUI.Scroller:init(location, totalLength, handleLength , thickness, i
 		frame=LoveUI.Rect:new(location.x, location.y, totalLength, thickness)
 	end
 	
-	LoveUI.Control.init(self, frame);
+	
 	
 	self.vertical=isVertical or false;
 	if self.vertical then
@@ -26,6 +26,8 @@ function LoveUI.Scroller:init(location, totalLength, handleLength , thickness, i
 		self.cell=LoveUI.ScrollerCell:new(self, LoveUI:getImage("light-gloss-top-bottom.png"));
 		self.cell.scrollerImage=LoveUI:getImage("heavy-gloss-bottom-top.png");
 	end
+	
+	LoveUI.Control.init(self, frame, self.cell);
 	
 	self.handleLength=handleLength;
 	self.totalLength=totalLength;

@@ -1,3 +1,27 @@
+--[[
+Guide to LoveUI.ScrollView.
+
+Properties:
+	--Property
+		--[Example Values] description
+		
+	hidden
+		[true/false] set false to hide and disable scrollView
+	enabled
+		[true/false] whether to enable scrollBars
+	opaque
+		[true/false] whether to draw blackground
+	backgroundColor
+	
+	setOffset(aPoint)
+	
+	addOffset(aPoint)
+	
+	setFrame(aFrame)
+		to change origin, size of scrollView
+	setSize(aSize)
+]]--
+
 LoveUI.require("LoveUIView.lua")
 LoveUI.require("LoveUIClipView.lua")
 LoveUI.require("LoveUIScroller.lua");
@@ -7,24 +31,13 @@ LoveUI.ScrollView=LoveUI.View:new();
 function LoveUI.ScrollView:init(frame, contentSize, ...)
 	LoveUI.View.init(self, frame, ...)
 	self.contentView=LoveUI.View:new(LoveUI.Rect:new(0, 0, contentSize:get()));
-	local clipFrame=LoveUI.Rect:new(frame:get());
 	self.scrollbarWidth=15;
 	
 	self.opaque=true;
 	
-	if self:needsHorizontalScroller() then
-		clipFrame.size.height=clipFrame.size.height-self.scrollbarWidth
-	end
-	if self:needsVerticalScroller() then
-		clipFrame.size.width=clipFrame.size.width-self.scrollbarWidth
-	end
+	self.enabled=true
 	
-	clipFrame.origin.y=0
-	clipFrame.origin.x=0
-	
-	self.clipView=LoveUI.ClipView:new(clipFrame);
-	self.clipView:addSubview(self.contentView);
-	self:addSubview(self.clipView);
+	self:remakeClipView()
 	
 	self.horizontalScroller=nil;
 	self.verticalScroller=nil;
@@ -41,12 +54,8 @@ function LoveUI.ScrollView:init(frame, contentSize, ...)
 	return self;
 end
 
-function LoveUI.ScrollView:setContentSize(contentSize)
-	self.contentView.frame.size=contentSize:copy();
+function LoveUI.ScrollView:remakeClipView()
 	
-	self.clipView:setOffset(LoveUI.Point:new(0,0))
-	self.clipView:removeSubview(self.contentView);
-	self:removeSubview(self.clipView);
 	local clipFrame=LoveUI.Rect:new(self.frame:get());
 	if self:needsHorizontalScroller() then
 		clipFrame.size.height=clipFrame.size.height-self.scrollbarWidth
@@ -59,6 +68,24 @@ function LoveUI.ScrollView:setContentSize(contentSize)
 	self.clipView=LoveUI.ClipView:new(clipFrame);
 	self.clipView:addSubview(self.contentView);
 	self:addSubview(self.clipView);
+	
+	LoveUI.bind(self.clipView, "opaque", self, "opaque",
+		function (isopaque) 
+			return isopaque
+		end
+	,	function(isopaque, value)
+			self.opaque=value;
+		end);
+end
+
+function LoveUI.ScrollView:setContentSize(contentSize)
+	self.contentView.frame.size=contentSize:copy();
+	
+	self.clipView:setOffset(LoveUI.Point:new(0,0))
+	self.clipView:removeSubview(self.contentView);
+	self:removeSubview(self.clipView);
+	
+	self:remakeClipView()
 	self.horizontalScroller=nil;
 	self.verticalScroller=nil;
 	if self:needsHorizontalScroller() then
@@ -99,18 +126,8 @@ function LoveUI.ScrollView:setFrame(frame)
 	self.clipView:setOffset(LoveUI.Point:new(0,0))
 	self.clipView:removeSubview(self.contentView);
 	self:removeSubview(self.clipView);
-	local clipFrame=LoveUI.Rect:new(frame:get());
-	if self:needsHorizontalScroller() then
-		clipFrame.size.height=clipFrame.size.height-self.scrollbarWidth
-	end
-	if self:needsVerticalScroller() then
-		clipFrame.size.width=clipFrame.size.width-self.scrollbarWidth
-	end
-	clipFrame.origin.y=0
-	clipFrame.origin.x=0
-	self.clipView=LoveUI.ClipView:new(clipFrame);
-	self.clipView:addSubview(self.contentView);
-	self:addSubview(self.clipView);
+	
+	self:remakeClipView()
 	self.horizontalScroller=nil;
 	self.verticalScroller=nil;
 	if self:needsHorizontalScroller() then
@@ -123,6 +140,11 @@ function LoveUI.ScrollView:setFrame(frame)
 		self:calculateScissor();
 	end
 end
+
+function LoveUI.ScrollView:setSize(aSize)
+	self:setFrame(LoveUI.Rect:new(self.frame.origin:get(), aSize:get()));
+end
+
 
 function LoveUI.ScrollView:setOffset(aPoint)
 	if self.verticalScroller then
@@ -160,7 +182,7 @@ function LoveUI.ScrollView:acceptsFirstResponder()
 end
 
 function LoveUI.ScrollView:mouseDown(anEvent)
-	if anEvent.button==love.mouse_wheeldown then
+	if anEvent.button==love.mouse_wheeldown and self.verticalScroller and self.enabled then
 		local originalValue=self.verticalScroller:getValue()
 		local newScrollerValue=-(self.clipView.offset.y-10)/(self.contentView.frame.size.height-self.frame.size.height);
 		self.verticalScroller:setValue(newScrollerValue);
@@ -173,7 +195,7 @@ function LoveUI.ScrollView:mouseDown(anEvent)
 		end
 		
 	end
-	if anEvent.button==love.mouse_wheelup then
+	if anEvent.button==love.mouse_wheelup and self.verticalScroller and self.enabled then
 		local originalValue=self.verticalScroller:getValue()
 		local newScrollerValue=-(self.clipView.offset.y+10)/(self.contentView.frame.size.height-self.frame.size.height);
 		self.verticalScroller:setValue(newScrollerValue);
@@ -224,9 +246,23 @@ function LoveUI.ScrollView:setHorizontalScroller()
 	
 	if self.horizontalScroller then
 		self.horizontalScroller:setAction(self.horizontalScrolled, LoveUI.EventDefault, self); 
+		LoveUI.bind(self.horizontalScroller, "enabled", self, "enabled",
+			function (isenabled) 
+				return isenabled
+			end
+		,	function(isenabled, value)
+				return nil;
+			end);
 	end
 	if self.verticalScroller then
 		self.verticalScroller:setAction(self.verticalScrolled, LoveUI.EventDefault, self); 
+		LoveUI.bind(self.verticalScroller, "enabled", self, "enabled",
+			function (isenabled) 
+				return isenabled
+			end
+		,	function(isenabled, value)
+				return nil;
+			end);
 	end
 end
 
@@ -257,9 +293,23 @@ function LoveUI.ScrollView:setVerticalScroller()
 	end
 	if self.horizontalScroller then
 		self.horizontalScroller:setAction(self.horizontalScrolled, LoveUI.EventDefault, self); 
+		LoveUI.bind(self.horizontalScroller, "enabled", self, "enabled",
+			function (isenabled) 
+				return isenabled
+			end
+		,	function(isenabled, value)
+				return nil;
+			end);
 	end
 	if self.verticalScroller then
 		self.verticalScroller:setAction(self.verticalScrolled, LoveUI.EventDefault, self); 
+		LoveUI.bind(self.verticalScroller, "enabled", self, "enabled",
+			function (isenabled) 
+				return isenabled
+			end
+		,	function(isenabled, value)
+				return nil;
+			end);
 	end
 end
 

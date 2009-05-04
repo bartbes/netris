@@ -1,12 +1,11 @@
 LoveUI.require("LoveUIView.lua")
 LoveUI.Control=LoveUI.View:new();
 
-function LoveUI.Control:init(frame)
+function LoveUI.Control:init(frame, cell)
 	-- e.g local o=LoveUI.Object:alloc():init();
 	LoveUI.View.init(self, frame);
 	self.cellClass=LoveUI.Cell;
-	self.cell=nil;
-	
+	self.cell=cell;
 	self.value="";
 	self.enabled=true;
 	self.ignoresMultiClick=false;
@@ -14,6 +13,20 @@ function LoveUI.Control:init(frame)
 	
 	self.action=nil;
 	self.target=nil;
+	
+	
+	if self.cell then
+		local tcellValue=self.cell.value
+		LoveUI.bind(self.cell, "value", self, "value",
+				function (selfValue) 
+					return selfValue
+				end
+			,	function(selfValue, v)
+					self.value=v;
+				end);
+				
+		self.cell.value=tcellValue
+	end
 	return self;
 end
 

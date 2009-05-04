@@ -16,7 +16,11 @@ function LoveUI.ButtonCell:performClick(sender)
 end
 
 function LoveUI.ButtonCell:drawImage(frame, view)
-	LoveUI.graphics.setColor(self.controlView.backgroundColor)
+	if self.controlView.enabled then
+		LoveUI.graphics.setColor(self.controlView.backgroundColor)
+	else
+		LoveUI.graphics.setColor(255, 255, 255)
+	end
 	local size=frame.size;
 	
 	if view.opaque then
@@ -79,6 +83,6 @@ function LoveUI.ButtonCell:drawTitle(frame, view)
 		curTitle=self.controlView.alternateTitle
 	end
 	LoveUI.graphics.setFont(view.font);
-	LoveUI.graphics.setColor(0,0,0);
+	LoveUI.graphics.setColor(self.controlView.textColor);
 	LoveUI.graphics.draw(self.controlView.title, frame.size.width/2-view.font:getWidth(self.controlView.title)/2, frame.size.height/2+view.font:getHeight()/2-1)
 end

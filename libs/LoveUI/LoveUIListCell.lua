@@ -7,14 +7,19 @@ function LoveUI.ListCell:init(frame, contentView, theListView, index, ...)
 	self.index=index;
 	self:addSubview(contentView);
 	self.selected=false;
-	self.opaque=true;
+	self.enabled=true;
+	self.opaque=true
 	return self;
 end
 
 function LoveUI.ListCell:display()
 	LoveUI.View.display(self);
 	if self.selected then
-		LoveUI.graphics.setColor(50,50,255,128);
+		if self.enabled then
+			LoveUI.graphics.setColor(50,50,255,128);
+		else
+			LoveUI.graphics.setColor(50,50,50,32);
+		end
 		LoveUI.graphics.rectangle(2, 0,0,self.frame.size:get())
 	end
 end
@@ -30,7 +35,7 @@ function LoveUI.ListCell:setContentView(aView)
 end
 
 function LoveUI.ListCell:mouseDown(theEvent)
-	if theEvent.button==love.mouse_left then
+	if theEvent.button==love.mouse_left and self.enabled then
 		self.listView:setSelectedIndex(self.index);
 	else
 		if self.nextResponder then

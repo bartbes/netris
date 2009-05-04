@@ -79,7 +79,7 @@ function LoveUI.View:updateSubviews(dt)
 end
 
 function LoveUI.View:calculateScissor()
-	--if self.superview then
+	if self.superview then
 		local super_frame=self:convertRectFromView(self.superview.scissorFrame, self.superview)
 		local child_frame=self:convertRectFromView(self.frame, self);
 		local x1, y1, x2, y2 = math.max(super_frame.origin.x, 0), math.max(super_frame.origin.y, 0), 
@@ -89,7 +89,7 @@ function LoveUI.View:calculateScissor()
 		for i, v in ipairs(self.subviews) do
 			v:calculateScissor()
 		end
-	--end
+	end
 end
 
 function LoveUI.View:getScissor()

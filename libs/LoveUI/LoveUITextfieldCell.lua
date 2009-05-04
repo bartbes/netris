@@ -11,7 +11,7 @@ function LoveUI.TextfieldCell:init(view, image, ...)
 	self.offset=0; -- how many pixels is the text shifted to the right.
 	self.cushion=6; -- How much room between left edge of textfield to the right edge of the first character
 	self.cursorLastShown=0; -- Cursor disappears every 0.5 seconds for 0.5 seconds. This variable records this time.
-	self.showCursor=false; -- Whether cursor is seen at this moment in time.
+	self.showCursor=true; -- Whether cursor is seen at this moment in time.
 	self.lastMouseDownEvent=nil; -- Last time mouse pressed into text field
 	return self;
 end
@@ -88,7 +88,7 @@ function LoveUI.TextfieldCell:drawImage(frame, view)
 	LoveUI.graphics.setColor(self.backgroundColor)
 	local size=frame.size;
 	
-	if view.opaque or true then
+	if view.opaque then
 		LoveUI.graphics.rectangle(2, 0,0, size.width, size.height)
 	end
 	
@@ -109,6 +109,8 @@ function LoveUI.TextfieldCell:resignFirstResponder()
 		self.controlView.isFirstResponder=false;
 		self.state=LoveUI.OFF;
 		self.offset=0
+		self.selectStart=0
+		self.selectLength=0
 	end
 	return self.controlView.shouldResignFirstResponder
 end
@@ -134,12 +136,13 @@ function LoveUI.TextfieldCell:mouseDown(theEvent)
 		self.controlView.shouldResignFirstResponder=true;
 		--repeat mouse click, because the textfield blocked the first mouseclick when resigning first responder was refused.
 		self.controlView.context:reclick();
+		--error('A')
 	else
+		--error('A')
 		self.selectStart=self:getTextLocation(self.controlView:convertPointFromBase(theEvent.mouseLocation)) --put cursor to position of mouse click
 		self.selectLength=0
 		self.lastMouseDownEvent=theEvent
 	end
-	
 end
 
 function LoveUI.TextfieldCell:getTextLocation(aPoint) --get the nth char, at location of x, relative to left edge
@@ -165,6 +168,11 @@ function LoveUI.TextfieldCell:mouseUp(theEvent)
 		end
 		return;
 	end
+	
+	if theEvent.clickCount>2 then
+		self.controlView:selectAll()
+	end
+	
 	self:activateControlEvent(self.controlView, LoveUI.EventMouseClicked ,theEvent);
 end
 
@@ -232,14 +240,15 @@ function LoveUI.TextfieldCell:display(frame, view)
 	self:drawBorder(frame, view)
 end
 function LoveUI.TextfieldCell:update(dt)
-	self.showCursor=false;
-	if love.timer.getTime()-self.cursorLastShown>1.5 then
-		self.showCursor=false
+	self.showCursor=true;
+	if love.timer.getTime()-self.cursorLastShown > 1 then
+		self.showCursor=true
 		self.cursorLastShown=love.timer.getTime();
-	elseif love.timer.getTime()-self.cursorLastShown>0.75 then
-		self.showCursor=true;
+	elseif love.timer.getTime()-self.cursorLastShown>0.5 then
+		self.showCursor=false;
 	end
-	if (love.mouse.isDown(love.mouse_left) and self.lastMouseDownEvent~=nil) then --dragging the rectangle
+	
+	if (love.mouse.isDown(love.mouse_left) and self.lastMouseDownEvent~=nil) and self.controlView.isFirstResponder then --dragging the rectangle
 		local mousePoint=self.controlView:convertPointFromBase(LoveUI.Point:new(love.mouse.getPosition()))
 		if self.controlView:convertPointFromBase(self.lastMouseDownEvent.mouseLocation).x ~= mousePoint.x then
 			self.selectLength=self:getTextLocation(mousePoint)-self.selectStart;
@@ -260,19 +269,19 @@ end
 function LoveUI.TextfieldCell:drawText(frame, view)
 	local curValue=self.value;
 	LoveUI.graphics.setFont(view.font);
-	LoveUI.graphics.setColor(0,0,0);
+	LoveUI.graphics.setColor(self.controlView.textColor);
 	LoveUI.graphics.draw(self.value, self.cushion-self.offset, frame.size.height/2+5)
 end
 
 function LoveUI.TextfieldCell:drawSelection(frame, view)
-	if view.isFirstResponder then
 		LoveUI.graphics.setLineStyle( love.line_rough )
 		local xloc=view.font:getWidth(string.sub(self.value, 1, self.selectStart))+self.cushion-self.offset
 		if self.selectLength==0 then
-			if self.showCursor then
+			if self.showCursor and view.isFirstResponder then
 				LoveUI.graphics.setColor(0,0,0,255)
 				LoveUI.graphics.line(xloc, 3,xloc ,frame.size.height-3)
 			end
+			
 		else
 			LoveUI.graphics.setColor(50,50,255,50) --select rect color
 			if self.selectLength>0 then
@@ -282,5 +291,5 @@ function LoveUI.TextfieldCell:drawSelection(frame, view)
 				LoveUI.graphics.rectangle(love.draw_fill, xloc-selWid, 3, selWid ,frame.size.height-5)
 			end
 		end
-	end
+	
 end

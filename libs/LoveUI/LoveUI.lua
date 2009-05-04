@@ -8,6 +8,7 @@ do
 	
 	LoveUI.graphics={};
 	LoveUI.mouse={};
+	LoveUI.bindings={}
 	
 	for k, v in pairs(love.graphics) do
 		LoveUI.graphics[k]=v;
@@ -37,16 +38,38 @@ do
 		return self.images[imageName]
 	end
 	
-	function LoveUI.bind(object1, key1, object2, key2, returnFunction)
+	function LoveUI.bind(object1, key1, object2, key2, indexFunc, newindexFunc)
+		if not LoveUI.bindings[object1] then
+			LoveUI.bindings[object1]={}
+			
+		end
+		LoveUI.bindings[object1][key1]={};
+		LoveUI.bindings[object1][key1].toObject=object2;
+		LoveUI.bindings[object1][key1].toKey=key2;
+		LoveUI.bindings[object1][key1].indexFunc=indexFunc;
+		LoveUI.bindings[object1][key1].newindexFunc=newindexFunc;
 		object1[key1]=nil;
 		object1:setmetamethod("__index", 
 			function(t, key)
-				if key==key1 then 
-					return returnFunction(object2[key2]);
+				local b=LoveUI.bindings[t][key];
+				if b and b.indexFunc then
+					return b.indexFunc(b.toObject[b.toKey])
 				end
 				if rawget(t, "__baseclass") then
 					return t.__baseclass[key]
 				end
+				return rawget(t, key);
+			end)
+			
+		object1:setmetamethod("__newindex", 
+			function(t, key, value)
+				--error(tostring(value))
+				local b=LoveUI.bindings[t][key]
+				if b and b.newindexFunc then
+					--rawset(t, key, value);
+					return b.newindexFunc(b.toObject[b.toKey], value)
+				end
+				return rawset(t, key, value);
 			end)
 	end
 	
@@ -65,6 +88,7 @@ do
 	LoveUI.defaultBackgroundColor=LoveUI.graphics.newColor(255, 255, 255);
 	LoveUI.defaultForegroundColor=LoveUI.graphics.newColor(64, 64, 192);
 	LoveUI.defaultSecondaryColor=LoveUI.graphics.newColor(0, 0, 128);
+	LoveUI.defaultTextColor=LoveUI.graphics.newColor(0, 0, 0);
 	
 	--Control Events
 	LoveUI.EventDefault=1;
@@ -99,11 +123,11 @@ do
 		end
 		return cpy;
 	end
-	LoveUI.requireall=function(dir)
-		dir="";
-		dir=PATHS.LIBRARY_DIR.."/"..PATHS.LIBRARY_NAME;
+	LoveUI.requireall=function()
+		local dir=PATHS.LIBRARY_DIR.."/"..PATHS.LIBRARY_NAME;
 		love.filesystem.require(dir.."/LoveUIContext.lua");
 		love.filesystem.require(dir.."/LoveUIClipView.lua");
+		love.filesystem.require(dir.."/LoveUILabel.lua");
 		love.filesystem.require(dir.."/LoveUITextfield.lua");
 		love.filesystem.require(dir.."/LoveUIButton.lua");
 		love.filesystem.require(dir.."/LoveUIScrollView.lua");
