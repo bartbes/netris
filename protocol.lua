@@ -31,8 +31,8 @@ function rcvCallback(data, ip, port)
 		return
 	elseif command == "removePlayer" then
 		local num = tonumber(it())
-		local msg = it()
-		msg(players[num].name .. " left: " .. msg)
+		local mesg = it()
+		msg(players[num].name .. " left: " .. mesg)
 		players[num] = nil
 	elseif command == "gameScore" then
 		local sc = tonumber(it())
