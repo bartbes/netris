@@ -18,7 +18,7 @@ function modeselect:load()
 	self.btn_back = LoveUI.Button:new(LoveUI.Rect:new(200, 500, 400, 50))
 	self.btn_back.title = "Back"
 	self.btn_back:setAction(self.btnhandler)
-	self.context:addSubview(self.btn_coop, self.btn_versus--[[, self.btn_control,]] self.btn_back)
+	self.context:addSubview(self.btn_coop, self.btn_versus--[[, self.btn_control]], self.btn_back)
 end
 
 function modeselect.btnhandler(btn)
