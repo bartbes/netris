@@ -188,6 +188,6 @@ function identifyatmaster(server, port)
 	if not host then
 		return nil, "DNS failed"
 	end
-	conn.socket:sendto("MASTERSERVER_IDENTIFY", host, ip)
+	conn.socket:sendto("MASTERSERVER_IDENTIFY", host, port)
 end
 
