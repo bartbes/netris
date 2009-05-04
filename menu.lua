@@ -13,7 +13,7 @@ function menu:load()
 	self.btn_multi:setAction(self.btnhandler)
 	self.btn_server = LoveUI.Button:new(LoveUI.Rect:new(200, 190, 400, 50))
 	self.btn_server.title = "Start a server"
-	self.btn_server.value = "server"
+	self.btn_server.value = "modeselect"
 	self.btn_server:setAction(self.btnhandler)
 	self.btn_config = LoveUI.Button:new(LoveUI.Rect:new(200, 260, 400, 50))
 	self.btn_config.title = "Configure"

@@ -54,7 +54,7 @@ function browser.btnhandler(btn, mouseEvent)
 	elseif btn.title == "Refresh" then
 		activatestate("browser")
 	elseif btn.title == "Host" then
-		activatestate("server")
+		activatestate("modeselect")
 	elseif btn.title == "Back" then
 		activatestate("menu")
 	elseif btn.title == "Manual" then

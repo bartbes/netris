@@ -20,6 +20,7 @@ love.filesystem.require("menu.lua")
 love.filesystem.require("browser.lua")
 love.filesystem.require("config.lua")
 love.filesystem.require("manualconnect.lua")
+love.filesystem.require("modeselect.lua")
 curstate = "menu"
 
 version = "0.01"
