@@ -1,6 +1,7 @@
 love.filesystem.require("libs/LUBE.lua")
 love.filesystem.require("libs/class.lua")
 love.filesystem.require("libs/serverbrowser.lua")
+love.filesystem.require("libs/Updater.lua")
 love.filesystem.require("libs/LoveUI/LoveUI.lua")
 LoveUI.requireall()
 love.filesystem.require("gettime.lua")
@@ -21,6 +22,7 @@ love.filesystem.require("browser.lua")
 love.filesystem.require("config.lua")
 love.filesystem.require("manualconnect.lua")
 love.filesystem.require("modeselect.lua")
+love.filesystem.require("update.lua")
 curstate = "menu"
 
 version = "0.01"
@@ -43,6 +45,7 @@ function draw()
 end
 
 function keypressed(key)
+	if key == love.key_d and love.keyboard.isDown(love.key_rctrl) then debug.debug() end
 	if key == love.key_escape then activatestate("menu") end
 	_G[curstate]:keypressed(key)
 end
