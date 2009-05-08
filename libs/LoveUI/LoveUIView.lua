@@ -2,10 +2,12 @@ LoveUI.require("LoveUIRect.lua")
 LoveUI.require("LoveUIResponder.lua")
 LoveUI.View=LoveUI.Responder:new();
 
+
+
 function LoveUI.View:init(frame, ...)
 	-- e.g local o=LoveUI.Object:alloc():init();
 	LoveUI.Responder.init(self, frame, ...);
-	self.frame=frame;
+	self.frame=frame or LoveUI.Rect:new(-1,-1,-1,-1);
 	self.scissorFrame=self.frame;
 	self.subviews={};
 	self.superview=nil;
@@ -14,6 +16,8 @@ function LoveUI.View:init(frame, ...)
 	self.escapeScissor=false;
 	self.hidden=false;
 	self.backgroundColor=LoveUI.defaultBackgroundColor
+	self.textColor=LoveUI.defaultTextColor;
+	self.selectColor=LoveUI.defaultSelectColor
 	return self;
 end
 
@@ -50,7 +54,9 @@ end
 function LoveUI.View:toSubviews(fn)
 	fn(self);
 	for k, v in pairs(self.subviews) do
-		fn(v)
+		if fn(v) == false then
+			return false;
+		end
 		v:toSubviews(fn);
 	end
 end
@@ -120,8 +126,8 @@ function LoveUI.View:displaySubviews()
 					v:displaySubviews();
 				--end
 				LoveUI.popMatrix()
-				self.context:restoreGraphicsEnvironment()
 				v:postDisplay()
+				self.context:restoreGraphicsEnvironment()
 			end
 		end
 	end
@@ -131,7 +137,88 @@ function LoveUI.View:preDisplay()
 end
 
 function LoveUI.View:postDisplay()
+	local size=self.frame.size;
+	if self.tabAccessible and self.context.firstResponder == self then
+		LoveUI.graphics.setColor(LoveUI.defaultSelectColor)
+		LoveUI.graphics.setLine(4)
+		LoveUI.graphics.rectangle(1, self.frame.origin.x+1, self.frame.origin.y+1 , size.width-2, size.height-2)
+	end
 end
+
+function LoveUI.View:getIndex()
+	if self.superview then
+		for k, v in pairs(self.superview.subviews) do
+			if v==self then
+				return k
+			end
+		end
+	end
+end
+
+function LoveUI.View:getNextView()
+	if not self.superview then return nil end;
+	local k=self:getIndex();
+	return self.superview.subviews[k+1]
+end
+
+function LoveUI.View:getNextViewInHierarchy()
+
+	if #self.subviews>=1 then
+		return self.subviews[1]
+	end
+	
+	local nextView;
+	nextView=self:getNextView();
+	
+	if nextView then
+		return nextView;
+	end
+	
+	local pSuper=self.superview
+	nextView=pSuper:getNextView()
+	while not nextView do
+		pSuper=pSuper.superview
+		if not pSuper then
+			break;
+		end
+		nextView=pSuper:getNextView()
+		if nextView then
+			break;
+		end
+	end
+	
+	if nextView then
+		return nextView;
+	else
+		return self.context.contentView
+	end
+	
+end
+
+function LoveUI.View:getNextTabAccessControl(previousResponder)
+	local nextView=self;--=self:getNextView();
+	while true do
+		nextView=nextView:getNextViewInHierarchy();
+		if nextView.tabAccessible and not nextView.hidden and nextView.enabled and nextView:acceptsFirstResponder() then
+			self.context:setFirstResponder(nextView);
+			break;
+		end
+		if self==self.context.contentView then
+			return false;
+		end
+	end
+	
+	return true
+end
+
+function LoveUI.View:keyDown(theEvent)
+	if theEvent.keyCode==love.key_tab then
+		self:getNextTabAccessControl();		
+	else
+		LoveUI.Responder.keyDown(self, theEvent, self);
+	end
+end
+
 
 function LoveUI.View:removeSubview(...)
 	local views={...};
@@ -145,6 +232,12 @@ function LoveUI.View:removeSubview(...)
 				break;
 			end
 		end
+	end
+end
+
+function LoveUI.View:apply(t)
+	for k, v in pairs(t) do
+		self[k]=v;
 	end
 end
 

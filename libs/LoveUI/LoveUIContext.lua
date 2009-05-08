@@ -43,12 +43,13 @@ function LoveUI.Context:init()
 	self.lastKeyEvent=nil;
 	self.keysDown={};
 	
-	
 	self.clickCount=1;
-	self.contentView=LoveUI.View:new(LoveUI.Rect:new(0,0,LoveUI.graphics.getWidth(), LoveUI.graphics.getHeight()));
+	local contentView=LoveUI.View:new(LoveUI.Rect:new(0,0,LoveUI.graphics.getWidth(), LoveUI.graphics.getHeight()));
+	self.firstResponder=contentView;
+	self:setContentView(contentView);
+	
 	self.contentView.context=self;
 	self.contentView.opaque=false;
-	self.firstResponder=self.contentView;
 	self.graphicsEnvironmentStack=LoveUI.Stack:new();
 	return self;
 end
@@ -223,7 +224,7 @@ function LoveUI.Context:reclick()
 end
 
 function LoveUI.Context:setContentView(view)
-	view:setNextResponder(self)
+	view:setNextResponder(nil)
 	self.contentView=view;
 	if self.firstResponder==nil then
 		self:setFirstResponder(self.contentView)

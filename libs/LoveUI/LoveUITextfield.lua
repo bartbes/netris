@@ -4,15 +4,16 @@ Guide to LoveUI.Textfield.
 Properties:
 	--Property
 		--[Example Values] description
-		
+	tabAccessible
+		[true/false] whether can select textfield with tab. default true.
 	hidden
-		[true/false] set false to hide and disable textfield
+		[true/false] set false to hide and disable textfield. default false.
 	enabled
-		[true/false] set false to disable editting
+		[true/false] set false to disable editting. default true.
 	textColor
 		[love.graphics.newColor(0,0,0)] set to change text color
 	opaque
-		[true/false] whether to draw blackground
+		[true/false] whether to draw blackground default true.
 	image
 		[nil] set to nil to disable gloss
 	value
@@ -34,12 +35,10 @@ Properties:
 LoveUI.require("LoveUIControl.lua")
 LoveUI.require("LoveUITextfieldCell.lua")
 LoveUI.Textfield=LoveUI.Control:new();
-
 function LoveUI.Textfield:init(frame)
 	-- e.g local o=LoveUI.Object:alloc():init();
 	LoveUI.Control.init(self, frame, LoveUI.TextfieldCell:new(self, LoveUI:getImage("light-gloss-bottom-top.png")));
 	self.editable=true;
-	self.textColor=LoveUI.defaultTextColor;
 	self.enabled=true;
 	self.cellClass=LoveUI.TextfieldCell;
 	self.cell.value=""
@@ -47,9 +46,7 @@ function LoveUI.Textfield:init(frame)
 	self.opaque=true;
 	self.isFirstResponder=false;
 	self.justBecameFirstResponder=false
-	
-	
-			
+	self.tabAccessible=true;
 	return self;
 end
 
@@ -63,7 +60,7 @@ end
 
 function LoveUI.Textfield:selectAll()
 	self.cell.selectStart=0
-	self.cell.selectLength=#self.cell.value
+	self.cell.selectLength=#tostring(self.cell.value)
 end
 
 function LoveUI.Textfield:mouseDown(theEvent)
@@ -105,26 +102,9 @@ end
 
 function LoveUI.Textfield:keyDown(theEvent)
 	if theEvent.keyCode==love.key_tab then
-		local selfIndex=1;
-		for k, v in pairs(self.superview.subviews) do
-			if v==self then
-				selfIndex=k
-				break;
-			end
-		end
-		for i=selfIndex+1, #self.superview.subviews+1, 1 do
-			if i>#self.superview.subviews then
-				i=1;
-			end
-			local v=self.superview.subviews[i];
-			if (v.__baseclass==LoveUI.Textfield and v.enabled and not v.hidden) or v==self then
-				self.shouldResignFirstResponder=true
-				self.context:setFirstResponder(v);
-				break;
-			end
-		end
-	else
-		self.cell:keyDown(theEvent);
+		LoveUI.Control.keyDown(self, theEvent);
+		return
 	end
+	self.cell:keyDown(theEvent);
 	
 end

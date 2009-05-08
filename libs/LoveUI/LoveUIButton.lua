@@ -4,7 +4,8 @@ Guide to LoveUI.Button.
 Properties:
 	--Property
 		--[Example Values] description
-		
+	tabAccessible
+		[true/false] whether can select textfield with tab. default false.
 	hidden
 		[true/false] set false to hide and disable Button
 	enabled
@@ -34,13 +35,22 @@ function LoveUI.Button:init(frame)
 	LoveUI.Control.init(self,frame,  LoveUI.ButtonCell:new(self, LoveUI:getImage("light-gloss-bottom-top.png")) );
 	self.enabled=true;
 	self.state=LoveUI.OffState;
-	self.title="Button";
-	self.alternateTitle=nil;
+	self.value="Button";
 	self.cellClass=LoveUI.ButtonCell;
 	self.cell.alternateImage=LoveUI:getImage("heavy-gloss-top-bottom.png")
 	self.opaque=true;
 	self.textColor=LoveUI.defaultTextColor
 	self.backgroundColor=LoveUI.defaultForegroundColor;
+	LoveUI.bind(self, "title", self, "value",
+			function (selfValue) 
+				print("LoveUI: aButton.title is deprecated. Please use aButton.value instead")
+				return selfValue
+				
+			end
+		,	function(selfValue, v)
+				print("LoveUI: aButton.title is deprecated. Please use aButton.value instead")
+				self.value=v;
+			end);
 	return self;
 end
 --[[
@@ -74,5 +84,12 @@ end
 
 function LoveUI.Button:mouseUp(theEvent)
 	self.cell:mouseUp(theEvent);
-	
+end
+
+function LoveUI.Button:keyDown(theEvent)
+	self.cell:keyDown(theEvent);
+end
+
+function LoveUI.Button:keyUp(theEvent)
+	self.cell:keyUp(theEvent);
 end

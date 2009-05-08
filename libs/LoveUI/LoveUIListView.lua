@@ -36,6 +36,7 @@ function LoveUI.ListView:init(frame, datasource, ...)
 	self.dataSource=datasource;
 	self.enabled=true
 	self.opaque=true;
+	self.tabAccessible=true
 	self.scrollView=LoveUI.ScrollView:new(LoveUI.Rect:new(0,0,frame.size:get()), LoveUI.Rect:new(0,0,frame.size:get()));
 	self:addSubview(self.scrollView)
 	
@@ -60,10 +61,17 @@ function LoveUI.ListView:init(frame, datasource, ...)
 	self.cellHeight=24;
 	self.selectedIndex=nil;
 	self.controlEvents={}
-	self:reloadData()
+	
+	if self.dataSource then
+		self:reloadData()
+	end
 	
 	return self;
 end
+
+
+
+
 
 function LoveUI.ListView:setFrame(aFrame)
 	self.frame=aFrame;
@@ -71,7 +79,7 @@ function LoveUI.ListView:setFrame(aFrame)
 	self:calculateScissor();
 end
 
-function LoveUI.View:setSize(aSize)
+function LoveUI.ListView:setSize(aSize)
 	self.frame.size=aSize:copy();
 	self.scrollView:setFrame(LoveUI.Rect:new(0,0,aSize:get()));
 	self:calculateScissor();
@@ -96,7 +104,7 @@ function LoveUI.ListView:reloadData()
 		local ncell=LoveUI.ListCell:new(
 				LoveUI.Rect:new(0, i*(self.cellHeight+self.cellSpacing), coluWidth, self.cellHeight), nil, self, i+1);
 		self.scrollView.contentView:addSubview(ncell)
-		ncell:setContentView(self.dataSource:viewForRow(self, i+1))
+		ncell:setContentView(self.dataSource:viewForRow(self, i+1, ncell) or LoveUI.View:new(LoveUI.Rect:new(0,0,0,0)))
 		
 		if i%2==1 then
 			ncell.backgroundColor=love.graphics.newColor(128, 128, 255, 32)
@@ -122,7 +130,7 @@ end
 
 function LoveUI.ListView:mouseUp(theEvent)
 	if theEvent.button==love.mouse_right and self.enabled then
-		self:setSelectedIndex(nil);
+		self:setSelectedIndex(nil, theEvent);
 	else
 		if self.nextResponder then
 			self.nextResponder:mouseUp(theEvent)
@@ -169,12 +177,11 @@ function LoveUI.ListView:keyDown(theEvent)
 		end
 		return;
 	end
-	if self.nextResponder then
-		self.nextResponder:keyDown(theEvent)
-	end
+	LoveUI.Control.keyDown(self, theEvent);
 end
 
-function LoveUI.ListView:setSelectedIndex(index)
+
+function LoveUI.ListView:setSelectedIndex(index, theEvent)
 	--local origIndex=self.selectedIndex
 		if index and (index <1 or index > self.dataSource:numberOfRows()) then
 			index=self.selectedIndex
@@ -189,6 +196,7 @@ function LoveUI.ListView:setSelectedIndex(index)
 		end
 	
 	--if self.selectedIndex~=origIndex then
+	
 		self:activateControlEvent(self, LoveUI.EventDefault ,theEvent, self.selectedIndex);
 		self:activateControlEvent(self, LoveUI.EventValueChanged ,theEvent, self.selectedIndex);
 	--end

@@ -1,11 +1,13 @@
 LoveUI.require("LoveUIActionCell.lua")
 LoveUI.ButtonCell=LoveUI.ActionCell:new()
 
-function LoveUI.ButtonCell:init(...)
+function LoveUI.ButtonCell:init(view, image, ...)
 	-- e.g local o=LoveUI.Object:alloc():init();
-	LoveUI.ActionCell.init(self, ...);
+	LoveUI.ActionCell.init(self, view, ...);
+	self.image=image
 	self.mouse_is_down=false
-	self.alternateImage=self.value;
+	self.key_is_down=false
+	self.alternateImage=self.image;
 	
 	return self;
 end
@@ -26,11 +28,11 @@ function LoveUI.ButtonCell:drawImage(frame, view)
 	if view.opaque then
 		LoveUI.graphics.rectangle(2, 0, 0, size.width, size.height)
 	end
-	local curImage=self.value;
+	local curImage=self.image;
 	if self.state==LoveUI.ON then
 		curImage=self.alternateImage
 	end
-	LoveUI.graphics.draw(curImage, frame.size.width/2, frame.size.height/2,0, frame.size.width/self.value:getWidth(), frame.size.height/self.value:getHeight());
+	LoveUI.graphics.draw(curImage, frame.size.width/2, frame.size.height/2,0, frame.size.width/self.image:getWidth(), frame.size.height/self.image:getHeight());
 end
 
 function LoveUI.ButtonCell:mouseDown(theEvent)
@@ -49,7 +51,7 @@ function LoveUI.ButtonCell:update(dt)
 	-- if mouse moves out then off the button. Might want to move this check to context to save processor.
 	local aPoint=LoveUI.Point:new(love.mouse.getPosition());
 	local aRect= self.controlView:convertRectToView(self.controlView.scissorFrame);
-	if self.mouse_is_down and LoveUI.mouseInRect(aPoint, aRect) then
+	if (self.mouse_is_down and LoveUI.mouseInRect(aPoint, aRect)) or self.key_is_down then
 		self.state=LoveUI.ON
 	else
 		self.state=LoveUI.OFF
@@ -76,13 +78,32 @@ function LoveUI.ButtonCell:mouseUp(theEvent)
 	end
 	self.mouse_is_down=false;
 end
+function LoveUI.ButtonCell:keyDown(theEvent)
+	if (theEvent.keyCode~= love.key_space and theEvent.keyCode~= love.key_return) or not self.controlView.tabAccessible then
+		LoveUI.Control.keyDown(self.controlView, theEvent);
+		return;
+	end
+	--self.color=LoveUI.graphics.newColor(0, 0, 255);
+	self.state=LoveUI.ON;
+	self.key_is_down=true;
+end
+
+function LoveUI.ButtonCell:keyUp(theEvent)
+	if (theEvent.keyCode~= love.key_space and theEvent.keyCode~= love.key_return) or not self.controlView.tabAccessible then
+		LoveUI.Control.keyUp(self.controlView, theEvent);
+		return;
+	end
+	
+	if self.state==LoveUI.ON then
+		self.state=LoveUI.OFF;
+		self:activateControlEvent(self.controlView, LoveUI.EventDefault ,theEvent);
+	end
+	self.key_is_down=false;
+end
 
 function LoveUI.ButtonCell:drawTitle(frame, view)
-	local curTitle=self.controlView.title;
-	if self.state==LoveUI.ON then
-		curTitle=self.controlView.alternateTitle
-	end
+	local curTitle=self.controlView.value;
 	LoveUI.graphics.setFont(view.font);
 	LoveUI.graphics.setColor(self.controlView.textColor);
-	LoveUI.graphics.draw(self.controlView.title, frame.size.width/2-view.font:getWidth(self.controlView.title)/2, frame.size.height/2+view.font:getHeight()/2-1)
+	LoveUI.graphics.draw(self.controlView.value, frame.size.width/2-view.font:getWidth(self.controlView.value)/2, frame.size.height/2+view.font:getHeight()/2-1)
 end

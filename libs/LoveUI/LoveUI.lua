@@ -3,12 +3,21 @@
 
 do
 	LoveUI={};
+	setmetatable(LoveUI, LoveUI);
 	LoveUI.images={};
 	LoveUI.sounds={};
 	
 	LoveUI.graphics={};
 	LoveUI.mouse={};
 	LoveUI.bindings={}
+	LoveUI.widgetTypes={};
+	
+	LoveUI.__newindex=function(t, k, v)
+		if type(v)=="table" and v.frame then
+			LoveUI.widgetTypes[k]=v;
+		end
+		rawset(t, k, v)
+	end
 	
 	for k, v in pairs(love.graphics) do
 		LoveUI.graphics[k]=v;
@@ -39,6 +48,10 @@ do
 	end
 	
 	function LoveUI.bind(object1, key1, object2, key2, indexFunc, newindexFunc)
+	
+		newindexFunc=newindexFunc or function(vi, v) end
+		indexFunc=indexFunc or function(v) return v end
+		
 		if not LoveUI.bindings[object1] then
 			LoveUI.bindings[object1]={}
 			
@@ -86,9 +99,10 @@ do
 	
 	
 	LoveUI.defaultBackgroundColor=LoveUI.graphics.newColor(255, 255, 255);
-	LoveUI.defaultForegroundColor=LoveUI.graphics.newColor(64, 64, 192);
+	LoveUI.defaultForegroundColor=LoveUI.graphics.newColor(160, 160, 200);
 	LoveUI.defaultSecondaryColor=LoveUI.graphics.newColor(0, 0, 128);
 	LoveUI.defaultTextColor=LoveUI.graphics.newColor(0, 0, 0);
+	LoveUI.defaultSelectColor=LoveUI.graphics.newColor(50,50,255,92);
 	
 	--Control Events
 	LoveUI.EventDefault=1;
@@ -132,13 +146,14 @@ do
 		love.filesystem.require(dir.."/LoveUIButton.lua");
 		love.filesystem.require(dir.."/LoveUIScrollView.lua");
 		love.filesystem.require(dir.."/LoveUIListView.lua");
+		love.filesystem.require(dir.."/LoveUITextView.lua");
 	end
 	LoveUI.pushMatrix = function()
 		local matrix={}
 		matrix.graphics={}
 		matrix.graphics.draw=LoveUI.graphics.draw
 		matrix.graphics.draws=LoveUI.graphics.draws
-		matrix.drawf=LoveUI.graphics.drawf
+		matrix.graphics.drawf=LoveUI.graphics.drawf
 		matrix.graphics.point=LoveUI.graphics.point
 		matrix.graphics.line=LoveUI.graphics.line
 		matrix.graphics.triangle=LoveUI.graphics.triangle
@@ -293,6 +308,8 @@ do
 	end
 	
 	love.filesystem.require(PATHS.LIBRARY_DIR.."/class.lua");
+	
+	
 	LoveUI.require("LoveUIStack.lua");
 	LoveUI.require("LoveUIRect.lua");
 	LoveUI.graphicsMatrixStack=LoveUI.Stack:new();

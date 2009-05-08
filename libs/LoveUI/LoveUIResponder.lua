@@ -52,7 +52,9 @@ end
 function LoveUI.Responder:setNextResponder(aResponder)
 	local t=self.nextResponder;
 	self.nextResponder=aResponder;
-	aResponder:setNextResponder(t);
+	if aResponder and aResponder.setNextResponder then
+		aResponder:setNextResponder(t);
+	end
 		--inserting aResponder into responder chain.
 	-- Sets the receiver's next responder.
 end

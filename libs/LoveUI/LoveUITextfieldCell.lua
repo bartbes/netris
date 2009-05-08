@@ -47,25 +47,26 @@ function LoveUI.TextfieldCell:deleteForward(sender)
 end
 
 function LoveUI.TextfieldCell:normalize()
+	self.value=tostring(self.value)
 	if self.selectStart<0 then
 		self.selectStart=0
 	end
-	if self.selectStart>#self.value then
-		self.selectStart=#self.value
+	if self.selectStart>#tostring(self.value) then
+		self.selectStart=#tostring(self.value)
 	end
-	local widthToSelectEnd = self.controlView.font:getWidth(string.sub(self.value,1,self.selectStart+self.selectLength));
-	local widthToSelectStart = self.controlView.font:getWidth(string.sub(self.value,1,self.selectStart));
-	local lastCharX= self.cushion-self.offset+self.controlView.font:getWidth(self.value)
+	local widthToSelectEnd = self.controlView.font:getWidth(string.sub(tostring(self.value),1,self.selectStart+self.selectLength));
+	local widthToSelectStart = self.controlView.font:getWidth(string.sub(tostring(self.value),1,self.selectStart));
+	local lastCharX= self.cushion-self.offset+self.controlView.font:getWidth(tostring(self.value))
 	local cursorx=widthToSelectEnd - self.offset+self.cushion
 	
 	if cursorx > self.controlView.frame.size.width-self.cushion-1  then --if cursor/edge of select rectangle too far right--try keep text screen full
 		self.offset=widthToSelectEnd -self.controlView.frame.size.width+self.cushion*1.5
 	elseif cursorx < self.cushion then -- if cursor/edge of select rectangle too far left
 		self.offset=widthToSelectEnd
-	elseif self.controlView.font:getWidth(self.value)<self.controlView.frame.size.width-self.cushion then
+	elseif self.controlView.font:getWidth(tostring(self.value))<self.controlView.frame.size.width-self.cushion then
 		self.offset=0 
 	elseif lastCharX<self.controlView.frame.size.width-self.cushion and self.offset>self.cushion then
-		self.offset=self.controlView.font:getWidth(self.value)-self.controlView.frame.size.width 
+		self.offset=self.controlView.font:getWidth(tostring(self.value))-self.controlView.frame.size.width 
 	end
 end
 
@@ -101,7 +102,7 @@ end
 
 function LoveUI.TextfieldCell:resignFirstResponder()
 	
-	if not LoveUI.mouseInRect(LoveUI.Point:new(love.mouse.getX(), love.mouse.getY()), self.controlView.superview:convertRectToView(self.controlView.frame)) then
+	if not LoveUI.mouseInRect(LoveUI.Point:new(love.mouse.getX(), love.mouse.getY()), self.controlView.superview:convertRectToView(self.controlView.frame)) or true then
 		self.controlView.shouldResignFirstResponder=true;
 	end
 	
@@ -151,9 +152,9 @@ function LoveUI.TextfieldCell:getTextLocation(aPoint) --get the nth char, at loc
 		return 0;
 	end
 	if xValue >=self.controlView.font:getWidth(self.value) then
-		return #self.value;
+		return #tostring(self.value);
 	end
-	for i = 1, #self.value, 1 do 
+	for i = 1, #tostring(self.value), 1 do 
 		if (self.controlView.font:getWidth(string.sub(self.value,0,i))>xValue) then
 		return i-1
 		end 
@@ -220,13 +221,14 @@ function LoveUI.TextfieldCell:keyDown(theEvent)
 		end
 	elseif key == love.key_right then
 		if love.keyboard.isDown(love.key_lshift) or  love.keyboard.isDown(love.key_rshift) then
-			if self.selectStart+self.selectLength<#self.value then
+			if self.selectStart+self.selectLength<#tostring(self.value) then
 				self.selectLength=self.selectLength+1
 			end
 		else -- if no select rectangle
-			if self.selectLength==0 and self.selectStart<#self.value then
+			if self.selectLength==0 and self.selectStart<#tostring(self.value) then
 				self.selectStart=self.selectStart+1
 			else
+				self.selectStart=self.selectStart+1+self.selectLength
 				self.selectLength=0
 			end
 		end
@@ -267,13 +269,15 @@ function LoveUI.TextfieldCell:drawBorder(frame, view)
 end
 
 function LoveUI.TextfieldCell:drawText(frame, view)
-	local curValue=self.value;
+	self.value=tostring(self.value);
 	LoveUI.graphics.setFont(view.font);
 	LoveUI.graphics.setColor(self.controlView.textColor);
-	LoveUI.graphics.draw(self.value, self.cushion-self.offset, frame.size.height/2+5)
+	LoveUI.graphics.draw((self.value or ''), self.cushion-self.offset, frame.size.height/2+5)
 end
 
 function LoveUI.TextfieldCell:drawSelection(frame, view)
+	self.value=tostring(self.value);
+	
 		LoveUI.graphics.setLineStyle( love.line_rough )
 		local xloc=view.font:getWidth(string.sub(self.value, 1, self.selectStart))+self.cushion-self.offset
 		if self.selectLength==0 then
@@ -283,7 +287,7 @@ function LoveUI.TextfieldCell:drawSelection(frame, view)
 			end
 			
 		else
-			LoveUI.graphics.setColor(50,50,255,50) --select rect color
+			LoveUI.graphics.setColor(self.controlView.selectColor) --select rect color
 			if self.selectLength>0 then
 				LoveUI.graphics.rectangle(love.draw_fill, xloc, 3, view.font:getWidth(string.sub(self.value,self.selectStart+1,self.selectStart+self.selectLength)) ,frame.size.height-6)
 			else

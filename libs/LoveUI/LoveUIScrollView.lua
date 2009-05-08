@@ -78,6 +78,31 @@ function LoveUI.ScrollView:remakeClipView()
 		end);
 end
 
+function LoveUI.ScrollView:keyDown(theEvent)
+	if theEvent.keyCode==love.key_up then
+		self.scrollView:addOffset(LoveUI.Point:new(0, 10))
+		return
+		
+	end
+	if theEvent.keyCode==love.key_down then
+		self.scrollView:addOffset(LoveUI.Point:new(0, -10))
+		return
+		
+	end
+	if theEvent.keyCode==love.key_right then
+		self.scrollView:addOffset(LoveUI.Point:new(-10, 0))
+		return
+		
+	end
+	if theEvent.keyCode==love.key_left then
+		self.scrollView:addOffset(LoveUI.Point:new(10, 0))
+		return
+		
+	end
+	
+	LoveUI.Control.keyDown(self, theEvent);
+end
+
 function LoveUI.ScrollView:setContentSize(contentSize)
 	self.contentView.frame.size=contentSize:copy();
 	
