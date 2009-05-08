@@ -5,18 +5,18 @@ function updater:load()
 	self.context = LoveUI.Context:new()
 	self.found = false
 	self.btn_update = LoveUI.Button:new(LoveUI.Rect:new(200, 190, 400, 50))
-	self.btn_update.title = "Update"
+	self.btn_update.value = "Update"
 	self.btn_update:setAction(self.btnhandler)
 	self.btn_back = LoveUI.Button:new(LoveUI.Rect:new(200, 500, 400, 50))
-	self.btn_back.title = "Back"
+	self.btn_back.value = "Back"
 	self.btn_back:setAction(self.btnhandler)
 	self.context:addSubview(self.btn_back)
 end
 
 function updater.btnhandler(btn)
-	if btn.title == "Update" then
+	if btn.value == "Update" then
 		Updater.update()
-	elseif btn.title == "Back" then
+	elseif btn.value == "Back" then
 		activatestate("menu")
 	end
 end

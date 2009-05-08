@@ -23,21 +23,25 @@ function browser:load()
 	end
 	self.list = LoveUI.ListView:new(LoveUI.Rect:new(50, 50, 700, 400), data)
 	self.btn_connect = LoveUI.Button:new(LoveUI.Rect:new(50, 500, 100, 20))
-	self.btn_connect.title = "Connect"
+	self.btn_connect.value = "Connect"
+	self.btn_connect.tabAccessible = true
 	self.btn_refresh = LoveUI.Button:new(LoveUI.Rect:new(350, 500, 100, 20))
-	self.btn_refresh.title = "Refresh"
+	self.btn_refresh.value = "Refresh"
+	self.btn_refresh.tabAccessible = true
 	self.btn_server = LoveUI.Button:new(LoveUI.Rect:new(650, 500, 100, 20))
-	self.btn_server.title = "Host"
-	self.btn_back = LoveUI.Button:new(LoveUI.Rect:new(350, 550, 100, 20))
-	self.btn_back.title = "Back"
+	self.btn_server.value = "Host"
+	self.btn_server.tabAccessible = true
 	self.btn_manual = LoveUI.Button:new(LoveUI.Rect:new(50, 550, 100, 20))
-	self.btn_manual.title = "Manual"
+	self.btn_manual.value = "Manual"
+	self.btn_manual.tabAccessible = true
+	self.btn_back = LoveUI.Button:new(LoveUI.Rect:new(350, 550, 100, 20))
+	self.btn_back.value = "Back"
 	self.btn_connect:setAction(self.btnhandler)
 	self.btn_refresh:setAction(self.btnhandler)
 	self.btn_server:setAction(self.btnhandler)
 	self.btn_back:setAction(self.btnhandler)
 	self.btn_manual:setAction(self.btnhandler)
-	self.context:addSubview(self.list, self.btn_connect, self.btn_refresh, self.btn_server, self.btn_back, self.btn_manual)
+	self.context:addSubview(self.list, self.btn_connect, self.btn_refresh, self.btn_server, self.btn_manual, self.btn_back)
 end
 
 function browser:activated()
@@ -47,19 +51,19 @@ function browser:activated()
 end
 
 function browser.btnhandler(btn, mouseEvent)
-	if btn.title == "Connect" and browser.list.selectedIndex then
+	if btn.value == "Connect" and browser.list.selectedIndex then
 		local serv = browser.br.servers[browser.list.selectedIndex]
 		if not serv then return end
 		host = serv.ip
 		port = serv.port
 		activatestate("multiplayer")
-	elseif btn.title == "Refresh" then
+	elseif btn.value == "Refresh" then
 		activatestate("browser")
-	elseif btn.title == "Host" then
+	elseif btn.value == "Host" then
 		activatestate("modeselect")
-	elseif btn.title == "Back" then
+	elseif btn.value == "Back" then
 		activatestate("menu")
-	elseif btn.title == "Manual" then
+	elseif btn.value == "Manual" then
 		activatestate("manualconnect")
 	end
 end
