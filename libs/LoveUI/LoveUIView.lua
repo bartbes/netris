@@ -195,15 +195,15 @@ function LoveUI.View:getNextViewInHierarchy()
 	
 end
 
-function LoveUI.View:getNextTabAccessControl(previousResponder)
+function LoveUI.View:getNextTabAccessControl()
 	local nextView=self;--=self:getNextView();
 	while true do
 		nextView=nextView:getNextViewInHierarchy();
-		if nextView.tabAccessible and not nextView.hidden and nextView.enabled and nextView:acceptsFirstResponder() then
+		if nextView.tabAccessible and not nextView.hidden and nextView.enabled and nextView.context and nextView:acceptsFirstResponder() then
 			self.context:setFirstResponder(nextView);
 			break;
 		end
-		if self==self.context.contentView then
+		if nextView==self then
 			return false;
 		end
 	end
@@ -212,7 +212,7 @@ function LoveUI.View:getNextTabAccessControl(previousResponder)
 end
 
 function LoveUI.View:keyDown(theEvent)
-	if theEvent.keyCode==love.key_tab then
+	if theEvent.keyCode==love.key_tab and self.tabAccessible or self==self.context.contentView then
 		self:getNextTabAccessControl();		
 	else
 		LoveUI.Responder.keyDown(self, theEvent, self);
