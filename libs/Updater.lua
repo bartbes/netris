@@ -168,8 +168,8 @@ if not Updater.applicationmanaged and not Updater.neverupdate and Updater.checkf
 	if Updater.autoupdate and 1 == 2 then Updater.update()
 	else Updater.defineemptycallbacks(); load = Updater.dialog.load; draw = Updater.dialog.draw; keypressed = Updater.dialog.keypressed
 	end
-elseif Updater.currentversion > 0 then
-	Updater.loadgame()
+--elseif Updater.currentversion > 0 then
+--	Updater.loadgame()
 --else
 	--error("No version of game present, please update!\nIf you haven't received an update warning, check you internet connection.\nIf you have a working internet connection, contact the maintainer.")
 --We don't need this, version 0 is distributed.
