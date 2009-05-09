@@ -79,23 +79,23 @@ function LoveUI.ScrollView:remakeClipView()
 end
 
 function LoveUI.ScrollView:keyDown(theEvent)
-	if theEvent.keyCode==love.key_up then
-		self.scrollView:addOffset(LoveUI.Point:new(0, 10))
+	if theEvent.keyCode==love.key_up and self.verticalScroller then
+		self:addOffset(LoveUI.Point:new(0, 10))
+		return
+	end
+	
+	if theEvent.keyCode==love.key_down and self.verticalScroller then
+		self:addOffset(LoveUI.Point:new(0, -10))
 		return
 		
 	end
-	if theEvent.keyCode==love.key_down then
-		self.scrollView:addOffset(LoveUI.Point:new(0, -10))
+	if theEvent.keyCode==love.key_right and self.horizontalScroller then
+		self:addOffset(LoveUI.Point:new(-10, 0))
 		return
 		
 	end
-	if theEvent.keyCode==love.key_right then
-		self.scrollView:addOffset(LoveUI.Point:new(-10, 0))
-		return
-		
-	end
-	if theEvent.keyCode==love.key_left then
-		self.scrollView:addOffset(LoveUI.Point:new(10, 0))
+	if theEvent.keyCode==love.key_left and self.horizontalScroller then
+		self:addOffset(LoveUI.Point:new(10, 0))
 		return
 		
 	end
@@ -175,6 +175,7 @@ function LoveUI.ScrollView:setOffset(aPoint)
 	if self.verticalScroller then
 		self.verticalScroller:setValue(-aPoint.y/(self.contentView.frame.size.height-self.frame.size.height));
 		self.clipView:setOffset(LoveUI.Point:new(self.clipView.offset.x, -self.verticalScroller:getValue()*(self.contentView.frame.size.height-self.frame.size.height)));
+			
 	end
 	if self.horizontalScroller then
 		self.horizontalScroller:setValue(-aPoint.x/(self.contentView.frame.size.width-self.frame.size.width));
@@ -185,7 +186,7 @@ end
 
 function LoveUI.ScrollView:addOffset(aPoint)
 	local aPoint=self.clipView.offset+aPoint
-	self:setOffset(aPoint)
+	return self:setOffset(aPoint)
 end
 
 function LoveUI.ScrollView:display()
@@ -213,12 +214,10 @@ function LoveUI.ScrollView:mouseDown(anEvent)
 		self.verticalScroller:setValue(newScrollerValue);
 		self.clipView:setOffset(LoveUI.Point:new(self.clipView.offset.x, -self.verticalScroller:getValue()*(self.contentView.frame.size.height-self.frame.size.height)));
 		if self.verticalScroller:getValue()==originalValue then
-			if self.nextResponder then
-				self.nextResponder:mouseDown(anEvent)
-			end
+			LoveUI.View.mouseDown(self, anEvent)
 			return
 		end
-		
+		return
 	end
 	if anEvent.button==love.mouse_wheelup and self.verticalScroller and self.enabled then
 		local originalValue=self.verticalScroller:getValue()
@@ -226,12 +225,12 @@ function LoveUI.ScrollView:mouseDown(anEvent)
 		self.verticalScroller:setValue(newScrollerValue);
 		self.clipView:setOffset(LoveUI.Point:new(self.clipView.offset.x, -self.verticalScroller:getValue()*(self.contentView.frame.size.height-self.frame.size.height)));
 		if self.verticalScroller:getValue()==originalValue then
-			if self.nextResponder then
-				self.nextResponder:mouseDown(anEvent)
-			end
+			LoveUI.View.mouseDown(self, anEvent)
 			return
 		end
+		return
 	end
+	LoveUI.View.mouseDown(self, anEvent)
 end
 
 function LoveUI.ScrollView:needsHorizontalScroller()

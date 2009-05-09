@@ -157,13 +157,8 @@ function LoveUI.Context:checkKeyRepeat()
 end
 
 function LoveUI.Context:keyUp(theEvent)
-	self.keyRepeatSpeed=300;
-	for k, v in pairs(self.keysDown) do
-		if v==theEvent.keyCode then
-			table.remove(self.keysDown, k)
-			break;
-		end
-	end
+	self.keyRepeatSpeed=300
+	self.keysDown[theEvent.keyCode]=false;
 	if self.lastKeyEvent~=nil and theEvent.keyCode==self.lastKeyEvent.keyCode then
 		self.lastKeyEvent=nil;
 	end
@@ -173,16 +168,7 @@ function LoveUI.Context:keyUp(theEvent)
 end
 
 function LoveUI.Context:keyDown(theEvent)
-	local keysDownHasKey=false;
-	for k, v in pairs(self.keysDown) do
-		if v==theEvent.keyCode then
-			keysDownHasKey=true;
-			break;
-		end
-	end
-	if keysDownHasKey==false then
-		table.insert(self.keysDown, theEvent.keyCode);
-	end
+	self.keysDown[theEvent.keyCode]=true;
 	self.lastKeyEvent=theEvent;
 	if self.firstResponder~=nil then
 		self.firstResponder:keyDown(theEvent);

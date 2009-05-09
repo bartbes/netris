@@ -100,7 +100,9 @@ function LoveUI.ListView:reloadData()
 	local coluWidth=math.max(self.frame.size.width, self.dataSource:columnWidth());
 	
 	local i;
+	
 	for i=0, n-1, 1 do
+		
 		local ncell=LoveUI.ListCell:new(
 				LoveUI.Rect:new(0, i*(self.cellHeight+self.cellSpacing), coluWidth, self.cellHeight), nil, self, i+1);
 		self.scrollView.contentView:addSubview(ncell)

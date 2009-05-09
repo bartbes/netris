@@ -78,10 +78,11 @@ function LoveUI.ScrollerCell:mouseDown(theEvent)
 	elseif  LoveUI.mouseInRect(theEvent.mouseLocation, self.controlView.superview:convertRectToView(self.controlView.frame)) then
 		self.handleDragged=false;
 		--jump handler
+		local bOriginX, bOriginY=self.controlView:convertOriginToBase()
 		if self.controlView.vertical then
-			self.value=theEvent.mouseLocation.y-self.controlView.frame.origin.y - 19
+			self.value=theEvent.mouseLocation.y-bOriginY - 19
 		else
-			self.value=theEvent.mouseLocation.x-self.controlView.frame.origin.x - 19
+			self.value=theEvent.mouseLocation.x-bOriginX - 19
 		end
 		self:capValue();
 		self:activateControlEvent(self.controlView, LoveUI.EventDefault ,theEvent, self.controlView:getValue());

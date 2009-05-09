@@ -79,26 +79,27 @@ function LoveUI.ButtonCell:mouseUp(theEvent)
 	self.mouse_is_down=false;
 end
 function LoveUI.ButtonCell:keyDown(theEvent)
-	if (theEvent.keyCode~= love.key_space and theEvent.keyCode~= love.key_return) or not self.controlView.tabAccessible then
-		LoveUI.Control.keyDown(self.controlView, theEvent);
-		return;
-	end
-	--self.color=LoveUI.graphics.newColor(0, 0, 255);
-	self.state=LoveUI.ON;
-	self.key_is_down=true;
-end
-
-function LoveUI.ButtonCell:keyUp(theEvent)
-	if (theEvent.keyCode~= love.key_space and theEvent.keyCode~= love.key_return) or not self.controlView.tabAccessible then
-		LoveUI.Control.keyUp(self.controlView, theEvent);
+	if (theEvent.keyCode== love.key_space or theEvent.keyCode== love.key_return) then
+		
+		--self.color=LoveUI.graphics.newColor(0, 0, 255);
+		self.state=LoveUI.ON;
+		self.key_is_down=true;
 		return;
 	end
 	
-	if self.state==LoveUI.ON then
-		self.state=LoveUI.OFF;
-		self:activateControlEvent(self.controlView, LoveUI.EventDefault ,theEvent);
+	LoveUI.Control.keyDown(self.controlView, theEvent);
+end
+
+function LoveUI.ButtonCell:keyUp(theEvent)
+	if (theEvent.keyCode== love.key_space or theEvent.keyCode== love.key_return) then
+		if self.state==LoveUI.ON then
+			self.state=LoveUI.OFF;
+			self:activateControlEvent(self.controlView, LoveUI.EventDefault ,theEvent);
+		end
+		self.key_is_down=false;
+		return;
 	end
-	self.key_is_down=false;
+	LoveUI.Control.keyUp(self.controlView, theEvent);
 end
 
 function LoveUI.ButtonCell:drawTitle(frame, view)

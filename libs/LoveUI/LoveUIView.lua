@@ -155,6 +155,48 @@ function LoveUI.View:getIndex()
 	end
 end
 
+function LoveUI.View:getPreviousView()
+	if not self.superview then return nil end;
+	local k=self:getIndex();
+	if k-1>=1 then
+		return self.superview.subviews[k-1]
+	end
+	return nil;
+end
+
+function LoveUI.View:getPreviousViewInHierarchy()
+
+	if #self.subviews>=1 then
+		return self.subviews[#self.subviews]
+	end
+	
+	local previousView;
+	previousView=self:getPreviousView();
+	
+	if previousView then
+		return previousView;
+	end
+	
+	local pSuper=self.superview
+	nextView=pSuper:getPreviousView()
+	while not previousView do
+		pSuper=pSuper.superview
+		if not pSuper then
+			break;
+		end
+		previousView=pSuper:getPreviousView()
+		if previousView then
+			break;
+		end
+	end
+	
+	if previousView then
+		return previousView;
+	else
+		return self.context.contentView
+	end
+	
+end
 function LoveUI.View:getNextView()
 	if not self.superview then return nil end;
 	local k=self:getIndex();
@@ -211,11 +253,32 @@ function LoveUI.View:getNextTabAccessControl()
 	return true
 end
 
+function LoveUI.View:getPreviousTabAccessControl()
+	local previousView=self;--=self:getNextView();
+	while true do
+		previousView=previousView:getPreviousViewInHierarchy();
+		if previousView.tabAccessible and not previousView.hidden and previousView.enabled and previousView.context and previousView:acceptsFirstResponder() then
+			self.context:setFirstResponder(previousView);
+			break;
+		end
+		if previousView==self then
+			return false;
+		end
+	end
+	
+	return true
+end
+
 function LoveUI.View:keyDown(theEvent)
-	if theEvent.keyCode==love.key_tab and self.tabAccessible or self==self.context.contentView then
-		self:getNextTabAccessControl();		
+	if theEvent.keyCode==love.key_tab and (self.tabAccessible or self==self.context.contentView) then
+		if theEvent.keysDown[love.key_lshift] or theEvent.keysDown[love.key_rshift] then
+			self:getPreviousTabAccessControl();
+		else
+			self:getNextTabAccessControl();
+		end
+		
 	else
-		LoveUI.Responder.keyDown(self, theEvent, self);
+		LoveUI.Responder.keyDown(self, theEvent);
 	end
 end
 
@@ -242,7 +305,6 @@ function LoveUI.View:apply(t)
 end
 
 function LoveUI.View:addSubview(...)
-	--table.insert(self.subviews, aView);
 	local views={...};
 	for k, aView in pairs(views) do
 		if aView.superview==nil then
@@ -250,9 +312,6 @@ function LoveUI.View:addSubview(...)
 			aView.superview=self;
 			aView.context=self.context;
 			aView.nextResponder=self;
-			--local subviews={unpack(aView.subviews)};
-			--aView:removeSubview(unpack(subviews));
-			--aView:addSubview(unpack(subviews));
 			aView:toSubviews(function (v) v.context=self.context end)
 			aView:calculateScissor();
 		else
