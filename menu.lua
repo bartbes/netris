@@ -55,7 +55,7 @@ end
 
 function menu:draw()
 	if lost then love.graphics.draw("You lost!", 350, 306) end
-	love.graphics.draw("Credits:\nBartbes - Netris\nappleide - LoveUI\n\n(see LICENSE file)", 610, 540)
+	love.graphics.draw("Credits:\nBartbes - Netris\nappleide - LoveUI\nvs-hs - Master Server Hosting\n(see LICENSE file)", 610, 540)
 	self.context:display()
 end
 

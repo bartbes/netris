@@ -26,7 +26,7 @@ love.filesystem.require("update.lua")
 curstate = "menu"
 
 version = "0.01"
-masterserver = "bartbes.ath.cx"
+masterserver = "shell.etttretresju.net"
 masterport = 8189
 
 function load()
