@@ -1,0 +1,8 @@
+LoveUI.require("LoveUIScrollView.lua");
+
+LoveUI.TableView=LoveUI.Control:new();
+
+function LoveUI.TableView:init(frame, contentSize, ...)
+	LoveUI.Control.init(self, frame, ...)
+		return self;
+end
