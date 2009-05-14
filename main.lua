@@ -25,7 +25,7 @@ love.filesystem.require("modeselect.lua")
 love.filesystem.require("update.lua")
 curstate = "menu"
 
-version = "0.01"
+version = "Netris 0.9"
 masterserver = "shell.etttretresju.net"
 masterport = 8189
 
