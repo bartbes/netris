@@ -11,6 +11,7 @@ function game:load()
 	time = 0
 	score = 0
 	speed = 1
+	oldspeed = 1
 	timer2 = 10
 	localplayer = 0
 	activeplayer = -1
@@ -26,6 +27,7 @@ function game:activated()
 	time = 0
 	score = 0
 	speed = 1
+	oldspeed = 1
 	timer2 = 10
 	localplayer = 0
 	activeplayer = -1
@@ -37,9 +39,14 @@ function game:update(dt)
 	love.timer.sleep(100)
 	local drop = love.keyboard.isDown(love.key_down)
 	if drop then
-		speed = 10
+		if speed == oldspeed then
+			oldspeed = speed
+			speed = 10
+		end
 	else
-		speed = 1
+		if speed ~= oldspeed then
+			speed = oldspeed
+		end
 	end
 	timer2 = timer2 + dt
 	if timer2 >= 1/speed then
@@ -81,6 +88,7 @@ function game:update(dt)
 				end
 				dropblocks(i)
 				_G[curstate]:lineremoved(i)
+				oldspeed = score/1500+1
 			end
 		end
 	end
