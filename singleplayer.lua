@@ -11,6 +11,7 @@ function singleplayer:activated()
 	activeplayer = 1
 	players[1] = player:new(player_name, 0)
 	is_server = true
+	is_local = true
 end
 
 function singleplayer:deactivated()

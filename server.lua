@@ -15,6 +15,8 @@ function server:activated()
 	players[1] = player:new(player_name, 0)
 	self.counter = 0
 	self.lastblock = 0
+	is_server = true
+	is_local = false
 	--identifyatmaster(masterserver, masterport)
 end
 

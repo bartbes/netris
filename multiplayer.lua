@@ -9,6 +9,8 @@ end
 function multiplayer:activated()
 	game:activated()
 	connect(host, port)
+	is_server = false
+	is_local = false
 end
 
 function multiplayer:deactivated()

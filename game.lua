@@ -17,6 +17,7 @@ function game:load()
 	activeplayer = -1
 	players = {}
 	lost = false
+	paused = false
 	math.randomseed(os.time())
 end
 
@@ -33,10 +34,17 @@ function game:activated()
 	activeplayer = -1
 	players = {}
 	lost = false
+	paused = false
 end
 
 function game:update(dt)
 	love.timer.sleep(100)
+	timer = timer + dt
+	if timer > 1 then
+		time = gettime()
+		timer = 0
+	end
+	if paused then return end
 	local drop = love.keyboard.isDown(love.key_down)
 	if drop then
 		if speed == oldspeed then
@@ -99,11 +107,6 @@ function game:update(dt)
 			activatestate("menu")
 		end
 	end
-	timer = timer + dt
-	if timer > 1 then
-		time = gettime()
-		timer = 0
-	end
 end
 
 function game.drawgrid()
@@ -144,6 +147,9 @@ end
 function game.drawhud()
 	love.graphics.draw("Time: @" .. time, 640, 50)
 	love.graphics.draw("Score: " .. score, 640, 70)
+	if paused then
+		love.graphics.draw("PAUSED", 640, 85)
+	end
 	love.graphics.draw("Players:", 640, 100)
 	local c = 0
 	for i, v in pairs(players) do
@@ -229,6 +235,10 @@ function game:keypressed(key)
 				blocks[v].y = newpositions[v].y
 			end
 			activerotation = newrotation
+		end
+	elseif key == love.key_p then
+		if is_local then
+			paused = not paused
 		end
 	end
 end
