@@ -47,7 +47,7 @@ end
 function browser:activated()
 	self.br.servers = {}
 	self.servs = 0	self.br:search()
-	self.br:searchmaster(masterserver, masterport)
+	--self.br:searchmaster(masterserver, masterport)
 end
 
 function browser.btnhandler(btn, mouseEvent)
